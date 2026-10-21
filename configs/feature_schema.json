@@ -1,0 +1,129 @@
+{
+  "dtype": "float32",
+  "fields": [
+    {
+      "index": 0,
+      "name": "encoder_score_z"
+    },
+    {
+      "index": 1,
+      "name": "rrf_score"
+    },
+    {
+      "index": 2,
+      "name": "encoder_rank"
+    },
+    {
+      "index": 3,
+      "name": "first_track_transition_rank"
+    },
+    {
+      "index": 4,
+      "name": "history_transition_rank"
+    },
+    {
+      "index": 5,
+      "name": "artist_rank"
+    },
+    {
+      "index": 6,
+      "name": "log_popularity"
+    },
+    {
+      "index": 7,
+      "name": "log_gap"
+    },
+    {
+      "index": 8,
+      "name": "gap_30_90"
+    },
+    {
+      "index": 9,
+      "name": "gap_90_180"
+    },
+    {
+      "index": 10,
+      "name": "gap_180_365"
+    },
+    {
+      "index": 11,
+      "name": "gap_gt365"
+    },
+    {
+      "index": 12,
+      "name": "same_artist"
+    },
+    {
+      "index": 13,
+      "name": "tag_cosine_first"
+    },
+    {
+      "index": 14,
+      "name": "audio_cosine_first"
+    },
+    {
+      "index": 15,
+      "name": "audio_cosine_history"
+    },
+    {
+      "index": 16,
+      "name": "genre_cosine_first"
+    },
+    {
+      "index": 17,
+      "name": "genre_cosine_history"
+    },
+    {
+      "index": 18,
+      "name": "artist_known"
+    },
+    {
+      "index": 19,
+      "name": "first_artist_known"
+    },
+    {
+      "index": 20,
+      "name": "audio_available"
+    },
+    {
+      "index": 21,
+      "name": "first_audio_available"
+    },
+    {
+      "index": 22,
+      "name": "history_audio_available"
+    },
+    {
+      "index": 23,
+      "name": "genre_available"
+    },
+    {
+      "index": 24,
+      "name": "first_genre_available"
+    },
+    {
+      "index": 25,
+      "name": "history_genre_available"
+    },
+    {
+      "index": 26,
+      "name": "tag_available"
+    },
+    {
+      "index": 27,
+      "name": "first_tag_available"
+    },
+    {
+      "index": 28,
+      "name": "recent_unique_fraction"
+    },
+    {
+      "index": 29,
+      "name": "log_first_track_transition_count"
+    },
+    {
+      "index": 30,
+      "name": "first_track_transition_concentration"
+    }
+  ]
+}

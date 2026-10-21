@@ -1,0 +1,43 @@
+    fit_partition = user_partition(train_meta["users"])
+    positive = np.add.reduceat(np.asarray(y, dtype=np.int32), train_meta["offsets"][:-1]) > 0
+    fit_rows = np.flatnonzero(fit_partition & positive)
+    calib_rows = np.flatnonzero(~fit_partition)
+    if args.canary_rows:
+        fit_rows = fit_rows[:args.canary_rows]
+        calib_rows = calib_rows[:min(args.canary_rows, len(calib_rows))]
+    if not len(fit_rows) or not len(calib_rows):
+        raise ValueError("empty_fit_or_calibration")
+    if set(train_meta["users"][fit_rows].tolist()) & set(train_meta["users"][calib_rows].tolist()):
+        raise ValueError("fit_calibration_user_overlap")
+    train_treatment=val_treatment=donor_report=donor_mappings=None
+    if cue_match_mode=="wrong":
+        from arrive_cue_donors import build_treatments
+        train_treatment,val_treatment,donor_report,donor_mappings=build_treatments(
+            args.project,args.dataset,args.seed,train_meta,val_meta,x,vx,
+            train_manifest,val_manifest,args.request_context_root)
+    iterations = (5, 10) if args.canary_rows else ITERATIONS
+    model = CatBoostRanker(
+        iterations=max(iterations), depth=6, learning_rate=0.035,
+        loss_function=LOSS, random_seed=args.seed + 1000, thread_count=args.threads,
+        task_type="CPU", verbose=50, allow_writing_files=False,
+    )
+    began = time.monotonic()
+    print(json.dumps({"event":"fit_input_start","seed":args.seed,"queries":len(fit_rows),
+                      "full_train":full_train and not args.canary_rows,
+                      "eligible_train_rows":len(train_meta["row_ids"]),
+                      "coverage_sha256":extra.get("coverage_sha256")}),flush=True)
+    pool = fit_pool(x,y,train_meta,fit_rows,context,args.feature_mode,args.threads,
+                    cue_match_mode=cue_match_mode,cue_treatment=train_treatment,candidate_ids=train_ids)
+    model.fit(pool)
+    fit_seconds = time.monotonic() - began
+    del pool
+    print(json.dumps({"event":"fit_complete","seed":args.seed,"seconds":fit_seconds}),flush=True)
+    records = []
+    for trees in iterations:
+        ranked = top10(model, x, train_ids, train_meta, calib_rows, trees,
+                       context, args.feature_mode, threads=args.threads, cue_match_mode=cue_match_mode,
+                       cue_treatment=train_treatment)
+        _, ndcg = row_metrics(ranked, train_meta["targets"][calib_rows], train_meta["target_counts"][calib_rows])
+        score = user_macro(ndcg, train_meta["users"][calib_rows], np.ones(len(calib_rows), bool))
+        records.append({"trees": trees, "train_calibration_rrf_ndcg": float(score)})
+    selected = max(records, key=lambda z: (z["train_calibration_rrf_ndcg"], -z["trees"]))["trees"]
