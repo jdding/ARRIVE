@@ -1,0 +1,13 @@
+{
+  "schema": "arrive.reproduction.fixed_recipe.v1",
+  "purpose": "Fixed paper candidate recipe, not an experimental gate result",
+  "frozen_configuration": {
+    "budget": 200,
+    "protected_base_prefix": 10,
+    "relation_slots": 40,
+    "x_fraction": 0.75,
+    "anchor_count": 5,
+    "beta_x": 0.0,
+    "beta_h": 0.0
+  }
+}

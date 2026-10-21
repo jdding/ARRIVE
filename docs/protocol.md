@@ -2,8 +2,8 @@
 
 This document records the paper protocol and the behavior of the included native
 helpers. The package supports inspection and execution on supplied inputs;
-[coverage.md](coverage.md) lists the data preparation, model, and analysis paths
-that are not included. Synthetic checks do not reproduce the paper's results.
+[coverage.md](coverage.md) separates included source from unverified execution.
+Synthetic checks do not reproduce the paper's results.
 
 ## Task and data
 
@@ -19,6 +19,11 @@ half the song's duration. Ranker development uses 20,000 Train-held-out Onion
 requests and all 17,370 eligible Yambda Train requests. Auxiliary backbones and
 indexes exclude held-out targets from training features; evaluation uses
 full-Train assets. Both Test cohorts had been evaluated in earlier versions.
+Onion uses the recorded 20k temporal-row exclusion, not user-disjoint backbone
+folds: earlier Train episodes of the selected users can remain. Yambda covers
+all eligible Train rows through five user-disjoint folds with assignment seed
+20260927. This is distinct from the user-disjoint ranker fit/calibration split.
+See [the native stage guide](../reproduction/README.md) for both routes.
 
 ## Candidate sources and RRF200
 
@@ -46,7 +51,8 @@ reorder every item in the pool.
 
 Source lengths follow the dataset's native export contract. The 200-song pool
 budget is not a universal per-source length limit. Backbone scoring, production
-retrieval batches, and their rank-stitch contracts are outside this package.
+retrieval batches and rank-stitch contracts are included in the native exporter;
+the portable interface consumes their hash-bound exports.
 
 ## Ranker fitting and selection
 
@@ -122,8 +128,9 @@ Unknown cues and known cues with no usable content remain in the cohort. Their
 original zero matching and cue-availability fields are preserved. Shared-ranker
 refitting can still change their predictions. The low-level selector exposes
 unresolved donors as `-1`; the control wrapper rejects unresolved usable cues.
-The included package provides this selector and treatment logic; construction
-of real-data mappings from native dataset manifests is an omitted loader path.
+`convert_native_export.py` constructs the mapping from exported cue IDs (or
+aligned prepared rows for a folded Train merge) and the Train-only catalog.
+It reruns this selector and validates the resulting treatment bundle.
 
 ## Metrics and uncertainty
 
@@ -144,13 +151,14 @@ The four main NDCG matching contrasts (A--B and A--C on two datasets) use
 Bonferroni-adjusted 98.75% intervals. Mismatch--removal, Recall, subgroups, and
 candidate-coverage intervals are descriptive 95% intervals. Users may enter
 multiple strata; stratified analyses average requests within each user and
-stratum. Bootstrap analysis code and the paper's saved outputs are not included.
+stratum. `summarize_results.py` implements this aggregation and interval
+analysis on saved predictions; the paper's original predictions are not supplied.
 
 ## Paper-to-code mapping
 
 | Paper result | Protocol | Included helpers / limits |
 |---|---|---|
-| Table 1 | Full ARRIVE compared with its actual matched backbone checkpoint; three seeds | Retrieval, features, ranker, and metrics are inspectable. Backbones, baseline runners, paper models, and real outputs are omitted. |
+| Table 1 | Full ARRIVE compared with its actual matched backbone checkpoint; three seeds | Both backbone source chains, comparison adapters, export/ranking/evaluation and summary code are included. Data, paper models and original outputs are not distributed. |
 | Table 2 | SASRec-backed A/B/C comparison with fixed pools and identical fitting requests | Four-column removal and wrong-song treatment are included. A reuses Table 1's SASRec-backed models and outputs; paper controls and intervals are not reproduced. |
 | Table 3 | SASRec-backed source replay with and without first-song transitions | The other three sources, 200-song budget, and protected backbone Top-10 stay fixed. The paper's replay needed no padding. Real source exports and coverage results are omitted. |
-| User analyses | Seed-averaged paired per-user gains and within-user/stratum averages | The basic metric aggregation is included; saved predictions, interval analysis, and figure generation are omitted. |
+| User analyses | Seed-averaged paired per-user gains and within-user/stratum averages | Summary code includes paired intervals, harm/zero/improvement, strata and ECDF coordinates. Original predictions and figure styling are not distributed. |

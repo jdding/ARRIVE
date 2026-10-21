@@ -1,0 +1,52 @@
+{
+  "schema": "genrec.arrive_dataset_contract.v1",
+  "dataset_id": "music4all_onion_prepared_v1",
+  "prepared_schema": "genrec.music4all_onion.prepared.v1",
+  "information_boundary": [
+    "pre_hiatus_history",
+    "hiatus_length",
+    "observed_first_return_track",
+    "train_available_item_metadata"
+  ],
+  "target": "distinct_later_tracks_in_same_return_session",
+  "catalog": "train_seen_tracks_only_with_unseen_targets_retained_in_metric_denominator",
+  "selection_surface": "validation",
+  "seeds": [
+    2024,
+    2025,
+    2026
+  ],
+  "methods": {
+    "tisasrec": {
+      "family": "temporal_sequential",
+      "source": "RCCT/DuoGap/scripts/paper_tisasrec_runner.py",
+      "mechanism": "relative-time key/value self-attention",
+      "adaptation": "same return-session set target and evaluator"
+    },
+    "ssd4rec": {
+      "family": "long_sequence_state_space",
+      "source": "RCCT/DuoGap/vendor/ssd4rec_official/ssd4rec.py",
+      "mechanism": "official bidirectional Mamba2 SSD blocks",
+      "adaptation": "packed observed history plus tied task head"
+    },
+    "cosernn": {
+      "family": "session_context",
+      "source": "spotify-research/cosernn@057de1090eeb84a1f0bd5d9954bd41ed437e398d",
+      "mechanism": "session-level preference sequence with available temporal context and recurrent fusion",
+      "adaptation": "observed sessions and timestamps are used; unavailable device and skip contexts are not fabricated"
+    },
+    "muse": {
+      "family": "session_context",
+      "source": "yunhak0/MUSE@6fdca43d3de1f9489464d80be359c146e71b48d6",
+      "mechanism": "SR-GNN with train-transition augmentation and fine-grained VICReg item/position consistency",
+      "adaptation": "deterministic observed-prefix transition augmentation replaces the unavailable paper-specific shuffle-label branch; no future labels"
+    },
+    "megan": {
+      "family": "music_content_history",
+      "source": "doi:10.1145/3592853",
+      "mechanism": "attention fusion of identity/content/transition item views and long/session/short user views",
+      "adaptation": "paper-mechanism reimplementation with train-available Music4All audio, genre and transition views; no unavailable social edges"
+    }
+  },
+  "test_accessed": false
+}

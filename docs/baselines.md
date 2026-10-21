@@ -3,9 +3,11 @@
 This document describes the five comparison baselines in Table 1. Their
 recorded training configurations correspond to the saved Test results,
 selected checkpoints, and selected epochs underlying those rows. Their source
-implementations, training runners, data assets, and paper checkpoints are not
-included in this core release. The SASRec/SSD4Rec pairs with ARRIVE are described
-in [protocol.md](protocol.md).
+implementations, training/evaluation runners and available asset builders are
+included in `reproduction/native/`; generated data assets and paper checkpoints
+are not distributed. Machine-readable records are in
+`reproduction/configs/comparison_training.json`. The SASRec/SSD4Rec pairs with
+ARRIVE are described in [protocol.md](protocol.md).
 
 ## Task adaptations
 
@@ -82,3 +84,21 @@ cost across methods. Some optimizer details, including Onion TiSASRec's
 optimizer, are unrecorded in these manifests. Method-specific epoch/update
 budgets are not proof of fair tuning. Correspondence between saved metadata and
 Table 1 does not replace a baseline source audit or an independent rerun.
+
+## Native entry points
+
+Use `python scripts/native.py MODULE --help` to inspect each command:
+
+- `run_arrive_main_table_baseline`: train a comparison adapter; specify the
+  recorded `--adapter-revision`, settings and matching dataset JSON from
+  `reproduction/configs/` explicitly rather than relying on its old defaults.
+- `evaluate_arrive_frozen_test`: evaluate a saved baseline against the sealed
+  Test input without checkpoint selection.
+- `prepare_arrive_transition_cache`, `prepare_arrive_muse_counts`: Train-only
+  transition assets for the applicable adapters.
+- `prepare_arrive_faithful_baseline_assets`: track-space and graph inputs for
+  CoSeRNN/MEGAN; `pretrain_arrive_megan_line` creates MEGAN's LINE initialization.
+
+Supply provider data and regenerated assets, not another method's placeholder
+features. Asset reconstruction and the real-data comparison runs were not
+executed for this release. Preserve the missing-history limitations above.

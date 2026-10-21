@@ -93,7 +93,7 @@ def main():
         "zero_positive_fit_partition_rows": int((partition & ~positive).sum()),
         "cue_match_mode": args.cue_match_mode, "catalog_manifest_sha256": train.manifest.get("catalog_manifest_sha256")
         if args.cue_match_mode == "wrong" else None,
-        "wrong_cue_scope": "supplied_cues_and_catalog_checked_with_native_selector; raw_event_producer_omitted"
+        "wrong_cue_scope": "supplied_cues_and_catalog_checked_with_native_selector"
         if args.cue_match_mode == "wrong" else None,
         "train_export_sha256": train.fingerprint, "validation_export_sha256": validation.fingerprint,
         "model_sha256": digest(output / "yeti_ndcg.cbm"),

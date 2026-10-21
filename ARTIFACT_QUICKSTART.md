@@ -32,3 +32,9 @@ new directory rather than overwrite an existing result.
 Read [protocol](docs/protocol.md), [features](docs/features.md), and
 [coverage](docs/coverage.md) to map these checks to the paper. The original
 datasets, models and frozen exports are not included.
+
+For the raw-data-to-results source chain and both backbone configurations,
+continue with [reproduction/README.md](reproduction/README.md). Its optional
+`python scripts/smoke_reproduction.py` check additionally needs the reproduction
+dependencies. It exercises native SASRec forward/export and all three ranker
+arms on a tiny synthetic fixture, not a real-data or GPU reproduction.

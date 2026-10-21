@@ -23,5 +23,8 @@ The task uses 30-minute sessions, a gap of at least 30 days, up to 128
 pre-hiatus events and the observed first song. Targets are distinct songs in
 the next at most 64 events. Split by the frozen time boundaries; this is not a
 user cold-start split. Never build indexes/content from Validation/Test targets.
-Exact frozen cutoffs, source-length/batch contracts, OOF Train preparation and
-trained model identities are not recoverable from this small package alone.
+The [reproduction guide](../reproduction/README.md) identifies the frozen
+cutoffs, source-length/batch contracts, held-out Train preparation and native
+producers. Recorded configurations include selected epochs and original
+manifest fingerprints, not trained weights. A fresh run must regenerate its
+own model bindings; it must not copy an old manifest onto a new checkpoint.

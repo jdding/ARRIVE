@@ -1,0 +1,62 @@
+{
+  "schema": "genrec.arrive_dataset_contract.v1",
+  "dataset_id": "yambda500m_prepared_v2_seconds",
+  "prepared_schema": "genrec.yambda500m.prepared.v2",
+  "information_boundary": [
+    "pre_hiatus_history",
+    "hiatus_length",
+    "observed_first_return_track",
+    "train_available_item_metadata"
+  ],
+  "target": "distinct_later_tracks_in_same_return_session",
+  "catalog": "train_seen_tracks_only_with_unseen_targets_retained_in_metric_denominator",
+  "selection_surface": "validation",
+  "seeds": [
+    2024,
+    2025,
+    2026
+  ],
+  "test_accessed": false,
+  "protocol_adaptations": [
+    "organic Listen+ stream (event_type=listen, is_organic=1, played_ratio_pct>50)",
+    "elapsed-second axis rounded to 5-second precision; axis-fraction split (train <75%, validation [75%,85%), test sealed) in lieu of calendar dates",
+    "categorical grounding channel = artist multi-hot (no genre metadata); audio = release normalized_embed",
+    "crossfit epochs equal the frozen backbone best epoch per seed"
+  ],
+  "methods": {
+    "tisasrec": {
+      "source": "previously mapped relative-time K/V source",
+      "mechanism": "relative time key/value self-attention",
+      "adaptation": "relative axis = elapsed-second Yambda timeline rounded to 5-second precision"
+    },
+    "ssd4rec": {
+      "source": "pinned official SSD4Rec",
+      "mechanism": "official bidirectional Mamba2",
+      "adaptation": "event sequence = organic Listen+ sessions"
+    },
+    "car": {
+      "source": "official CAR bc61c20b4a8b3bd4db67974b4ed1578409e79822",
+      "report_label": "CAR-no-user (task adapted)",
+      "mechanism": "CPPM/GUPM/identity gating, abs consistency, FFN and native BPR",
+      "adaptation": "Observed-prefix context; creator branch disabled; uniform negatives exclude observed and suffix positives"
+    },
+    "muse": {
+      "source": "yunhak0/MUSE@6fdca43d",
+      "report_label": "MUSE (observed-prefix task adaptation)",
+      "mechanism": "item-node alias SRGNN; transition augmentation; alignment+VICReg; one epoch warmup",
+      "adaptation": "transition branch within observed sessions; 129 real + bridges up to 257; episode set-target sampled objective"
+    },
+    "cosernn": {
+      "source": "spotify-research/cosernn plus RecSys 2020 paper-defined Plays ablation",
+      "report_label": "CoSeRNN-Plays-Time (ARRIVE task adaptation)",
+      "mechanism": "fixed Train successor-track space; played-session recurrence; recency long-term fusion; cosine session target",
+      "adaptation": "track space from Yambda PPMI+SVD; same session boundary logic"
+    },
+    "megan": {
+      "source": "Wang et al., TOIS 42(1), DOI 10.1145/3592853; equations cross-checked against same-authors disclosure CN114969547B",
+      "report_label": "MEGAN (task-adapted)",
+      "mechanism": "Train-only heterogeneous music graph; LINE first- and second-order initialization; seven relation-specific graph-attention views; semantic fusion; candidate-history short-term attention; learned long/short/dynamic preference fusion",
+      "adaptation": "Music4All user, session, track and metadata-feature nodes with frozen weighted neighbor samples; observed pre-hiatus history plus true return anchor; episode set-target sampled objective and shared full-catalog evaluator Yambda: HMG from organic Listen+ transition graph"
+    }
+  }
+}

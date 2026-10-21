@@ -1,0 +1,447 @@
+{
+  "schema": "arrive.source_projection.v2",
+  "records": [
+    {
+      "file": "reproduction/native/analyze_arrive_joint_test.py",
+      "source_file": "analyze_arrive_joint_test.py",
+      "source_sha256": "14f5d8bf0331839f154541509106ca09da148dba892543f8299731cf3641c58d",
+      "packaged_sha256": "14f5d8bf0331839f154541509106ca09da148dba892543f8299731cf3641c58d",
+      "unchanged_bytes": true
+    },
+    {
+      "file": "reproduction/native/analyze_music4all_component_d_content_conversion.py",
+      "source_file": "analyze_music4all_component_d_content_conversion.py",
+      "source_sha256": "caf4a2d834540175d27fb893cc2ce7c73468d278887232c6f273c7be5c9ae49a",
+      "packaged_sha256": "caf4a2d834540175d27fb893cc2ce7c73468d278887232c6f273c7be5c9ae49a",
+      "unchanged_bytes": true
+    },
+    {
+      "file": "reproduction/native/analyze_music4all_component_d_content_validation.py",
+      "source_file": "analyze_music4all_component_d_content_validation.py",
+      "source_sha256": "f338f37599b8f22c660697763a85b54280bd933620539383167fb870401c84a4",
+      "packaged_sha256": "f338f37599b8f22c660697763a85b54280bd933620539383167fb870401c84a4",
+      "unchanged_bytes": true
+    },
+    {
+      "file": "reproduction/native/analyze_music4all_component_d_selective_exchange.py",
+      "source_file": "analyze_music4all_component_d_selective_exchange.py",
+      "source_sha256": "0d6a8411e38a606cd35d2d4d18b5b1e7c61b8d9ab7c507f86d0dc6b4e8f8330f",
+      "packaged_sha256": "0d6a8411e38a606cd35d2d4d18b5b1e7c61b8d9ab7c507f86d0dc6b4e8f8330f",
+      "unchanged_bytes": true
+    },
+    {
+      "file": "reproduction/native/arrive_context_repaired.py",
+      "source_file": "arrive_context_repaired.py",
+      "source_sha256": "23ccf57c7019be5f30754f8477f4410a15f16f71755888b1258c21db278671c6",
+      "packaged_sha256": "23ccf57c7019be5f30754f8477f4410a15f16f71755888b1258c21db278671c6",
+      "unchanged_bytes": true
+    },
+    {
+      "file": "reproduction/native/arrive_cue_donors.py",
+      "source_file": "arrive_cue_donors.py",
+      "source_sha256": "a15472934b846f692d525d15840dec6b1a9ca7851e7da9e972e4131cef16bbf2",
+      "packaged_sha256": "a15472934b846f692d525d15840dec6b1a9ca7851e7da9e972e4131cef16bbf2",
+      "unchanged_bytes": true
+    },
+    {
+      "file": "reproduction/native/arrive_deltagate_repaired.py",
+      "source_file": "arrive_deltagate_repaired.py",
+      "source_sha256": "9b70adecae2c75d1b38240d76a6408d1b6955c3e3a668eeb4ebc18a6042e8f27",
+      "packaged_sha256": "9b70adecae2c75d1b38240d76a6408d1b6955c3e3a668eeb4ebc18a6042e8f27",
+      "unchanged_bytes": true
+    },
+    {
+      "file": "reproduction/native/arrive_framework_datasets.py",
+      "source_file": "arrive_framework_datasets.py",
+      "source_sha256": "53b5e78d4fceb7068141b229d3a2361ebc09f515423ab9090aabb94e0c63a4b3",
+      "packaged_sha256": "dc0df4533ee25e3e9280f4f0cbb6fa72084b93a3e4fb29c9b9053eef72313c73",
+      "unchanged_bytes": false
+    },
+    {
+      "file": "reproduction/native/arrive_history_grouping.py",
+      "source_file": "arrive_history_grouping.py",
+      "source_sha256": "21b714fea4803dd713bff19af9d9405b1071ac64826224227c75e15f32967c99",
+      "packaged_sha256": "21b714fea4803dd713bff19af9d9405b1071ac64826224227c75e15f32967c99",
+      "unchanged_bytes": true
+    },
+    {
+      "file": "reproduction/native/arrive_history_reader.py",
+      "source_file": "arrive_history_reader.py",
+      "source_sha256": "6b105017a9dc5cd25ae54ba4e140d3508cb5d535397fd2e805e98fb5c1469b0e",
+      "packaged_sha256": "6b105017a9dc5cd25ae54ba4e140d3508cb5d535397fd2e805e98fb5c1469b0e",
+      "unchanged_bytes": true
+    },
+    {
+      "file": "reproduction/native/arrive_ilmart_backend.py",
+      "source_file": "arrive_ilmart_backend.py",
+      "source_sha256": "4d2f7d7c97533b86b8a12971a7268ab12457ec693bd0d4da2fb765f666846d46",
+      "packaged_sha256": "4d2f7d7c97533b86b8a12971a7268ab12457ec693bd0d4da2fb765f666846d46",
+      "unchanged_bytes": true
+    },
+    {
+      "file": "reproduction/native/arrive_main_table_models.py",
+      "source_file": "arrive_main_table_models.py",
+      "source_sha256": "e95035d6b1fd9f68674f11d88a781318c29748ddb7d5a14fa21946d5ce36f300",
+      "packaged_sha256": "e95035d6b1fd9f68674f11d88a781318c29748ddb7d5a14fa21946d5ce36f300",
+      "unchanged_bytes": true
+    },
+    {
+      "file": "reproduction/native/arrive_megan_repaired.py",
+      "source_file": "arrive_megan_repaired.py",
+      "source_sha256": "59b6d1e7ad58da8056ec29314abfe9f74b3a75f53f0dfa0793b15de05736806f",
+      "packaged_sha256": "59b6d1e7ad58da8056ec29314abfe9f74b3a75f53f0dfa0793b15de05736806f",
+      "unchanged_bytes": true
+    },
+    {
+      "file": "reproduction/native/arrive_muse_repaired.py",
+      "source_file": "arrive_muse_repaired.py",
+      "source_sha256": "bf3d17c37a69f2279848f9b6cff85a58ca5aa3442ece17b315472491e1bbef65",
+      "packaged_sha256": "bf3d17c37a69f2279848f9b6cff85a58ca5aa3442ece17b315472491e1bbef65",
+      "unchanged_bytes": true
+    },
+    {
+      "file": "reproduction/native/arrive_return_query.py",
+      "source_file": "arrive_return_query.py",
+      "source_sha256": "bf7ab566b33040c7fd742ca06fc0a2eb53fa0666c014a430fb7456a4fecaf87f",
+      "packaged_sha256": "bf7ab566b33040c7fd742ca06fc0a2eb53fa0666c014a430fb7456a4fecaf87f",
+      "unchanged_bytes": true
+    },
+    {
+      "file": "reproduction/native/arrive_train_fold_coverage.py",
+      "source_file": "arrive_train_fold_coverage.py",
+      "source_sha256": "2e5d22003fc079e3f7015fc1d4f32c4d8323e9b2106932986dcd94a6e3885729",
+      "packaged_sha256": "f4ebba03950a148a1a7fb9b3875973eefcee9e6022a59bd964ff9a867316527f",
+      "unchanged_bytes": false
+    },
+    {
+      "file": "reproduction/native/arrive_vista.py",
+      "source_file": "arrive_vista.py",
+      "source_sha256": "b7143c09946e8d0b47e69f97a039d936b7f098b6022989e6c8b4bed607c3711c",
+      "packaged_sha256": "b7143c09946e8d0b47e69f97a039d936b7f098b6022989e6c8b4bed607c3711c",
+      "unchanged_bytes": true
+    },
+    {
+      "file": "reproduction/native/arrive_vista_yeti.py",
+      "source_file": "arrive_vista_yeti.py",
+      "source_sha256": "936c2c5f2d1613d0f73676f8967906647f2a44705f65e1e2e74bd975a13435a0",
+      "packaged_sha256": "936c2c5f2d1613d0f73676f8967906647f2a44705f65e1e2e74bd975a13435a0",
+      "unchanged_bytes": true
+    },
+    {
+      "file": "reproduction/native/derive_arrive_yambda_content.py",
+      "source_file": "derive_arrive_yambda_content.py",
+      "source_sha256": "feed33650ce3329862885cdf0063abd8c073f4a72f8ec798626014738262ff20",
+      "packaged_sha256": "feed33650ce3329862885cdf0063abd8c073f4a72f8ec798626014738262ff20",
+      "unchanged_bytes": true
+    },
+    {
+      "file": "reproduction/native/evaluate_arrive_frozen_test.py",
+      "source_file": "evaluate_arrive_frozen_test.py",
+      "source_sha256": "7e2cd6bdf5266dd7850df952a596267e541ce61f956318dfe1fee9db3be63846",
+      "packaged_sha256": "7e2cd6bdf5266dd7850df952a596267e541ce61f956318dfe1fee9db3be63846",
+      "unchanged_bytes": true
+    },
+    {
+      "file": "reproduction/native/evaluate_arrive_yeti31_fusion_test.py",
+      "source_file": "evaluate_arrive_yeti31_fusion_test.py",
+      "source_sha256": "3e22a861a21f834090d82feab71724319b7a06444f58069d4b8257dbc13d1f67",
+      "packaged_sha256": "3e22a861a21f834090d82feab71724319b7a06444f58069d4b8257dbc13d1f67",
+      "unchanged_bytes": true
+    },
+    {
+      "file": "reproduction/native/evaluate_music4all_arrive_test.py",
+      "source_file": "evaluate_music4all_arrive_test.py",
+      "source_sha256": "3714fe133ef7fc8f47fbfc3d0c8d9e512d3b6e65fee79c79ea512b4cd14f4abc",
+      "packaged_sha256": "3714fe133ef7fc8f47fbfc3d0c8d9e512d3b6e65fee79c79ea512b4cd14f4abc",
+      "unchanged_bytes": true
+    },
+    {
+      "file": "reproduction/native/finalize_music4all_event_times.py",
+      "source_file": "finalize_music4all_event_times.py",
+      "source_sha256": "6d7b3854e479f89fce841b432295c6bbe0ea9ef6c1564ced6aa3b552c84f418a",
+      "packaged_sha256": "6d7b3854e479f89fce841b432295c6bbe0ea9ef6c1564ced6aa3b552c84f418a",
+      "unchanged_bytes": true
+    },
+    {
+      "file": "reproduction/native/finalize_music4all_onion_prepared.py",
+      "source_file": "finalize_music4all_onion_prepared.py",
+      "source_sha256": "99e4ae1c57ed06f51ed04ef7e66fdfb11aa42c18b94c99e4d0e2d1f7e42a976f",
+      "packaged_sha256": "99e4ae1c57ed06f51ed04ef7e66fdfb11aa42c18b94c99e4d0e2d1f7e42a976f",
+      "unchanged_bytes": true
+    },
+    {
+      "file": "reproduction/native/finalize_music4all_onion_test.py",
+      "source_file": "finalize_music4all_onion_test.py",
+      "source_sha256": "7748ff2f859c83e5f6462d4feae9f43b20a6efe1f2c10dfd092e6d4daa1d5b7d",
+      "packaged_sha256": "7748ff2f859c83e5f6462d4feae9f43b20a6efe1f2c10dfd092e6d4daa1d5b7d",
+      "unchanged_bytes": true
+    },
+    {
+      "file": "reproduction/native/freeze_arrive_content_model.py",
+      "source_file": "freeze_arrive_content_model.py",
+      "source_sha256": "1695c4d0651cc4edb58f3c210f310d2aa2ea33d6e250c2e558bdf188d0b3b345",
+      "packaged_sha256": "1695c4d0651cc4edb58f3c210f310d2aa2ea33d6e250c2e558bdf188d0b3b345",
+      "unchanged_bytes": true
+    },
+    {
+      "file": "reproduction/native/lfm_timeconcat_control.py",
+      "source_file": "lfm_timeconcat_control.py",
+      "source_sha256": "f5f4cd1f285c54f173767c7b132d587d00291a709c8d3152364f28bfc66f10c3",
+      "packaged_sha256": "f5f4cd1f285c54f173767c7b132d587d00291a709c8d3152364f28bfc66f10c3",
+      "unchanged_bytes": true
+    },
+    {
+      "file": "reproduction/native/materialize_yambda_sealed_test.py",
+      "source_file": "materialize_yambda_sealed_test.py",
+      "source_sha256": "13c41ed81793c37246a5267ecc8da5d01d52abd8f9c5f7d337491fd1fd6cd850",
+      "packaged_sha256": "13c41ed81793c37246a5267ecc8da5d01d52abd8f9c5f7d337491fd1fd6cd850",
+      "unchanged_bytes": true
+    },
+    {
+      "file": "reproduction/native/music_sequence_core.py",
+      "source_file": "music_sequence_core.py",
+      "source_sha256": "d257e1bdf29a7205f69591246efe8a1dbb2fb5663c3e6fa3f67ea78b83f44ac2",
+      "packaged_sha256": "d257e1bdf29a7205f69591246efe8a1dbb2fb5663c3e6fa3f67ea78b83f44ac2",
+      "unchanged_bytes": true
+    },
+    {
+      "file": "reproduction/native/prepare_arrive_yambda_500m.py",
+      "source_file": "prepare_arrive_yambda_500m.py",
+      "source_sha256": "c6d0db3f581a5e5ce4cf1a4542e4310ed22cc26d51a88a2f1ba07bb9abb14f5f",
+      "packaged_sha256": "c6d0db3f581a5e5ce4cf1a4542e4310ed22cc26d51a88a2f1ba07bb9abb14f5f",
+      "unchanged_bytes": true
+    },
+    {
+      "file": "reproduction/native/run_arrive_attribution_controls.py",
+      "source_file": "run_arrive_attribution_controls.py",
+      "source_sha256": "6e4535c715b71654b9e9e7365b78502dff13cb0b91376e529a8a306ec42a4bd9",
+      "packaged_sha256": "6e4535c715b71654b9e9e7365b78502dff13cb0b91376e529a8a306ec42a4bd9",
+      "unchanged_bytes": true
+    },
+    {
+      "file": "reproduction/native/run_arrive_full_rcce_control.py",
+      "source_file": "run_arrive_full_rcce_control.py",
+      "source_sha256": "f472e457e5c69ab1678bb459a3dae05e61fe8e8fc14da6b073d3ed208d20bfc2",
+      "packaged_sha256": "637a17a0c1b2c91e7d8661a9345b22d8653cea399c5be31adac0fdb5ef4206b6",
+      "unchanged_bytes": false
+    },
+    {
+      "file": "reproduction/native/run_arrive_independent_mig.py",
+      "source_file": "run_arrive_independent_mig.py",
+      "source_sha256": "a53950ca9bc7df52a88dec56888767ea5777998cacf8481f352da9da99f97d3b",
+      "packaged_sha256": "a53950ca9bc7df52a88dec56888767ea5777998cacf8481f352da9da99f97d3b",
+      "unchanged_bytes": true
+    },
+    {
+      "file": "reproduction/native/run_arrive_joint_objective.py",
+      "source_file": "run_arrive_joint_objective.py",
+      "source_sha256": "309c454016d9599cdde0cc458d75df3a1009d9e3eb293364117ec12dce28207b",
+      "packaged_sha256": "309c454016d9599cdde0cc458d75df3a1009d9e3eb293364117ec12dce28207b",
+      "unchanged_bytes": true
+    },
+    {
+      "file": "reproduction/native/run_arrive_main_table_baseline.py",
+      "source_file": "run_arrive_main_table_baseline.py",
+      "source_sha256": "ecfce8cfcbe2edd12dc02768389cdccbedde26edb493accd6d54d25d0c56b4a5",
+      "packaged_sha256": "ecfce8cfcbe2edd12dc02768389cdccbedde26edb493accd6d54d25d0c56b4a5",
+      "unchanged_bytes": true
+    },
+    {
+      "file": "reproduction/native/run_arrive_recent_ranker.py",
+      "source_file": "run_arrive_recent_ranker.py",
+      "source_sha256": "ac0c5c7756ce6679ab91d797a618ba8f2130dab991325c1bcb13f919add56eb1",
+      "packaged_sha256": "ac0c5c7756ce6679ab91d797a618ba8f2130dab991325c1bcb13f919add56eb1",
+      "unchanged_bytes": true
+    },
+    {
+      "file": "reproduction/native/run_arrive_unified_content_conversion.py",
+      "source_file": "run_arrive_unified_content_conversion.py",
+      "source_sha256": "326bab6974453056ff2de3859cd98d089d880dad01fc2d8a7fe32d9269774189",
+      "packaged_sha256": "326bab6974453056ff2de3859cd98d089d880dad01fc2d8a7fe32d9269774189",
+      "unchanged_bytes": true
+    },
+    {
+      "file": "reproduction/native/run_lfm_timeconcat_control.py",
+      "source_file": "run_lfm_timeconcat_control.py",
+      "source_sha256": "e6775748ec8ed26daa48f44100bb7f4e58747d8c8af026ef67769e80619362f0",
+      "packaged_sha256": "e6775748ec8ed26daa48f44100bb7f4e58747d8c8af026ef67769e80619362f0",
+      "unchanged_bytes": true
+    },
+    {
+      "file": "reproduction/native/run_music4all_arrive_confirmation_baselines.py",
+      "source_file": "run_music4all_arrive_confirmation_baselines.py",
+      "source_sha256": "49758bc98133332fb1695b8d054579068eb146d0d2dab513c275bce84e1fb075",
+      "packaged_sha256": "49758bc98133332fb1695b8d054579068eb146d0d2dab513c275bce84e1fb075",
+      "unchanged_bytes": true
+    },
+    {
+      "file": "reproduction/native/run_music4all_artist_component_b.py",
+      "source_file": "run_music4all_artist_component_b.py",
+      "source_sha256": "93ee4c56d2e4d581acde774d1fe76c721612b92bc5a4c8fda256c574ecbefc4e",
+      "packaged_sha256": "93ee4c56d2e4d581acde774d1fe76c721612b92bc5a4c8fda256c574ecbefc4e",
+      "unchanged_bytes": true
+    },
+    {
+      "file": "reproduction/native/run_music4all_baselines.py",
+      "source_file": "run_music4all_baselines.py",
+      "source_sha256": "26c7341bb20a1bc4444900ce658e33376a1a475050e795013102b7f9b62045b7",
+      "packaged_sha256": "26c7341bb20a1bc4444900ce658e33376a1a475050e795013102b7f9b62045b7",
+      "unchanged_bytes": true
+    },
+    {
+      "file": "reproduction/native/run_music4all_candidate_support_a0.py",
+      "source_file": "run_music4all_candidate_support_a0.py",
+      "source_sha256": "967e757e09bf321d1cb36b8c5d7050169eda11b2be0f62c9623ef51284ebecaa",
+      "packaged_sha256": "967e757e09bf321d1cb36b8c5d7050169eda11b2be0f62c9623ef51284ebecaa",
+      "unchanged_bytes": true
+    },
+    {
+      "file": "reproduction/native/run_music4all_candidate_support_a1.py",
+      "source_file": "run_music4all_candidate_support_a1.py",
+      "source_sha256": "0f80f6db5157834213955b92b773a5b4d36bc8076e60ef7c0c8d836ae1e0e691",
+      "packaged_sha256": "0db37c6ba9994278a891eaae2066ea48c036a8c0898e56c25eb4009159137332",
+      "unchanged_bytes": false
+    },
+    {
+      "file": "reproduction/native/run_music4all_component_b.py",
+      "source_file": "run_music4all_component_b.py",
+      "source_sha256": "1933a5f3e16fc25341f357b3bf1bb420e1ab03626b754be512b3b9ad03cb5353",
+      "packaged_sha256": "1933a5f3e16fc25341f357b3bf1bb420e1ab03626b754be512b3b9ad03cb5353",
+      "unchanged_bytes": true
+    },
+    {
+      "file": "reproduction/native/run_music4all_component_c2_conversion_oof.py",
+      "source_file": "run_music4all_component_c2_conversion_oof.py",
+      "source_sha256": "10482fc7f23606d10f0d3dc9aae0e79bd38b28083aa393c6e925147316d2acaa",
+      "packaged_sha256": "10482fc7f23606d10f0d3dc9aae0e79bd38b28083aa393c6e925147316d2acaa",
+      "unchanged_bytes": true
+    },
+    {
+      "file": "reproduction/native/run_music4all_component_c2_validation.py",
+      "source_file": "run_music4all_component_c2_validation.py",
+      "source_sha256": "68109c311ff9a1e11abce46d736d45dc7de0a20e53459ae86f0f8afedeb7c32b",
+      "packaged_sha256": "68109c311ff9a1e11abce46d736d45dc7de0a20e53459ae86f0f8afedeb7c32b",
+      "unchanged_bytes": true
+    },
+    {
+      "file": "reproduction/native/run_music4all_component_c_oof.py",
+      "source_file": "run_music4all_component_c_oof.py",
+      "source_sha256": "538746e5aa93d18adbe99d2a25a79a705e84ace6bc8ac07ba13ea25507d90762",
+      "packaged_sha256": "538746e5aa93d18adbe99d2a25a79a705e84ace6bc8ac07ba13ea25507d90762",
+      "unchanged_bytes": true
+    },
+    {
+      "file": "reproduction/native/run_music4all_component_d_joint_content_validation.py",
+      "source_file": "run_music4all_component_d_joint_content_validation.py",
+      "source_sha256": "071c8ffcd71c8907483588bb9563fcf2cf65599fb7abe7c40918cd265eb24ba9",
+      "packaged_sha256": "071c8ffcd71c8907483588bb9563fcf2cf65599fb7abe7c40918cd265eb24ba9",
+      "unchanged_bytes": true
+    },
+    {
+      "file": "reproduction/native/prepare_arrive_transition_cache.py",
+      "source_file": "prepare_arrive_transition_cache.py",
+      "source_sha256": "cd9c8df683be29476cefe7c3aa5f19966142aedb3a6948d2a9e10749fd991faf",
+      "packaged_sha256": "cd9c8df683be29476cefe7c3aa5f19966142aedb3a6948d2a9e10749fd991faf",
+      "unchanged_bytes": true
+    },
+    {
+      "file": "reproduction/native/prepare_arrive_muse_counts.py",
+      "source_file": "prepare_arrive_muse_counts.py",
+      "source_sha256": "ca4e7be7a08da0629140b2a7e2aa43c2af8c27a702a45a068230097d896bddd1",
+      "packaged_sha256": "ca4e7be7a08da0629140b2a7e2aa43c2af8c27a702a45a068230097d896bddd1",
+      "unchanged_bytes": true
+    },
+    {
+      "file": "reproduction/native/prepare_arrive_faithful_baseline_assets.py",
+      "source_file": "prepare_arrive_faithful_baseline_assets.py",
+      "source_sha256": "66d0f770d72de7497826e86955a4677d0fea77b60fdf7792b2937ee8ae3c79a7",
+      "packaged_sha256": "bfa6b2040182d993ba1698b7e7ed4636376390951ccde8c917d20b10bde69405",
+      "unchanged_bytes": false
+    },
+    {
+      "file": "reproduction/native/pretrain_arrive_megan_line.py",
+      "source_file": "pretrain_arrive_megan_line.py",
+      "source_sha256": "1fa0bf19d37d8a5b4970e86107478b0eac28dd89c0e935bfcdc7f252c771a39a",
+      "packaged_sha256": "1fa0bf19d37d8a5b4970e86107478b0eac28dd89c0e935bfcdc7f252c771a39a",
+      "unchanged_bytes": true
+    },
+    {
+      "file": "reproduction/native/run_music4all_component_b2_attainability.py",
+      "source_file": "run_music4all_component_b2_attainability.py",
+      "source_sha256": "5b06a14bc91cba83ee633462c633e2e1a7ce80c35d91917c8fdf6064ac5395e6",
+      "packaged_sha256": "5b06a14bc91cba83ee633462c633e2e1a7ce80c35d91917c8fdf6064ac5395e6",
+      "unchanged_bytes": true
+    },
+    {
+      "file": "reproduction/native/prepare_music4all_onion.cpp",
+      "source_file": "prepare_music4all_onion.cpp",
+      "source_sha256": "9114bd6b323bd5695513ac5f17b17b17fc19eef6f54e7d0e20ef374008b48571",
+      "packaged_sha256": "9114bd6b323bd5695513ac5f17b17b17fc19eef6f54e7d0e20ef374008b48571",
+      "unchanged_bytes": true
+    },
+    {
+      "file": "reproduction/native/materialize_music4all_onion_test.cpp",
+      "source_file": "materialize_music4all_onion_test.cpp",
+      "source_sha256": "5149d1bbf7694932252c53aff77b41a6f2a639bf0dbc6b9fd96716e461b788aa",
+      "packaged_sha256": "5149d1bbf7694932252c53aff77b41a6f2a639bf0dbc6b9fd96716e461b788aa",
+      "unchanged_bytes": true
+    },
+    {
+      "file": "reproduction/configs/music4all_onion.json",
+      "source_file": "music4all_onion.json",
+      "source_sha256": "d46afa87dfe88ec39f8286cd0e7d528f23d2282ad56e7ece86b1fe5e62086509",
+      "packaged_sha256": "4285baaed207cb65c794956749ffbb007679302da2b1dbaf8e8e48cba7ed6615",
+      "unchanged_bytes": false
+    },
+    {
+      "file": "reproduction/configs/music4all_repair_20260912.json",
+      "source_file": "music4all_repair_20260912.json",
+      "source_sha256": "442cdfdc5d07bacbacf6485fe73a6190532e8f5cddf4ca1c734824960dee71f9",
+      "packaged_sha256": "9295d4a4d80174a0372a1dd8ade061044deb3ea67cc56aad244b760cedaa8088",
+      "unchanged_bytes": false
+    },
+    {
+      "file": "reproduction/configs/yambda_500m_v1.json",
+      "source_file": "yambda_500m_v1.json",
+      "source_sha256": "7f141f52d0102fa3dc56555d6f26f0d87c24646825b5a6354ed09f82b5b87fcc",
+      "packaged_sha256": "f116e3e0e78375cc81f9bc3d84b83a0bb83f53350dedc558134e5b9927a8cfd9",
+      "unchanged_bytes": false
+    },
+    {
+      "file": "reproduction/native/audit_arrive_yeti_validation.py",
+      "source_file": "audit_arrive_yeti_validation.py",
+      "source_sha256": "7a6597a15bcdb1ff865941d3e4117029b5e8690e5aa3a1b978ce444c69527d8c",
+      "packaged_sha256": "7a6597a15bcdb1ff865941d3e4117029b5e8690e5aa3a1b978ce444c69527d8c",
+      "unchanged_bytes": true
+    }
+  ],
+  "packaging_changes": [
+    "Registry documentation removes a private host reference",
+    "Native exporter additionally saves complete sources and cue identities",
+    "Separate reviewer freeze schema for the portable ranker/export interface",
+    "Fixed candidate recipe input is distinguished from historical experimental gate results",
+    "Recover recorded Onion temporal exclusion and SSD4Rec fold support from existing native20k runtime",
+    "Fold merge drops an inapplicable single-source-bundle fingerprint",
+    "Rename a local lambda parameter without changing its ordering"
+  ],
+  "added_interface_files": {
+    "reproduction/native/reviewer_freeze.py": "df149a06eeb15c11103919bf484f3cf92de0200b03e74612c5f10dec00c9bfd4",
+    "scripts/backbone_predictions.py": "b36dc1962038a42db1411560bb6f53011d08f5d1fc5e656167e83d18b980ff00",
+    "scripts/convert_native_export.py": "447c4b8d9b6198d68b8e076e773e5d7b7196cde26043a6a034b314e4dae84ddf",
+    "scripts/evaluate_ranker.py": "335e31537da453e7ad86040b6ddfe99b78b72401e5a02f70ee8e5d0429437b6b",
+    "scripts/fetch_ssd4rec_source.py": "d04f771862f78be1814c965dceaebfe08ad3ee89fd4808e71796759bac65e23b",
+    "scripts/native.py": "c9217af66de14158134739bb7040853b9141c4b474f49617e117729a9a9438a2",
+    "scripts/prepare_artist_mapping.py": "c6293a9d4be9ad4051502a1544ffc0a96585e998f0abf415fa3c8facdd0c05b5",
+    "scripts/prepare_catalog.py": "131a94882aee28bf1ef0b9bef2df04c750ab6dd6d382f7cfbcd25f5900fa274c",
+    "scripts/prepare_onion_content.py": "7fa64096cdcca623590f58ba446fc7f1f63192071ccf3ef730c88f039c310c20",
+    "scripts/replay_coverage.py": "719f841b08c73977dc4f34b8ece316780a3727329d926cd98bf4664fa7309da4",
+    "scripts/smoke.py": "4114e51e491e76a508182bf82d8e26f10a749c353c034f67cacf4e18dc22cd62",
+    "scripts/smoke_reproduction.py": "a26d0fa9bc5b9a7625898d06089deedc324dd8d5ecb91bb29a0efde1af6cc5ce",
+    "scripts/summarize_results.py": "a14eb98e906c6e8ce0206817a93835dfb19cc560a3b0847286b53996868e8033",
+    "scripts/train_backbone.py": "84a6a6326a75af60d23ef81cfd68fe98a6e251b82baad503f4ea1e0af77226f5",
+    "scripts/train_ranker.py": "72ec4114aedebdc2b96bef18e7831afafb4baa785eaa0d4d78410f0dbc595dd4",
+    "tools/result_summary.py": "3518b8211cba808413de2ec9466fd2a9eb9eecf853a236e028c68ba125f5f9b3"
+  },
+  "new_research_experiments": false,
+  "historical_results_rerun": false
+}

@@ -10,3 +10,13 @@ catboost_info/
 synthetic-smoke-*/
 export-smoke-*/
 .DS_Store
+prepared_data/
+datasets/
+runs/
+refine-logs/
+vendor/ssd4rec_official/
+*.cbm
+*.pt
+*.pth
+*.npy
+*.npz

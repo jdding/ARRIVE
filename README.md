@@ -5,11 +5,13 @@ ARRIVE combines sequence-model candidates, first-song transitions, historical
 transitions and same-artist songs in a protected RRF200 pool, then ranks that
 pool with 31-feature CatBoost YetiRank.
 
-This release contains the core implementation and an interface for training,
-calibration, evaluation and source-coverage replay on prepared candidate exports.
-It does not contain the original datasets, trained models or a raw-data-to-paper
-reproduction pipeline. [Coverage and limits](docs/coverage.md) distinguishes the
-included code from the reported experiments.
+This release contains the main-result source chain: data preparation, SASRec
+and SSD4Rec backbone training, Train-only indexes, candidate/feature export,
+matching controls, evaluation and result analysis. The
+[reproduction guide](reproduction/README.md) gives the stage order, commands
+and recorded settings. Datasets and trained models are not distributed.
+The chain has not been rerun on the real datasets for this release;
+[coverage and limits](docs/coverage.md) separates source coverage from verification.
 
 ## Start here
 
@@ -41,6 +43,7 @@ See the [quickstart](ARTIFACT_QUICKSTART.md) for the test suite and export comma
 | [docs/exports.md](docs/exports.md) | Prepared-input schema and executable export-level commands |
 | [docs/baselines.md](docs/baselines.md) | Baseline adaptations and recorded configuration scope |
 | [docs/data_acquisition.md](docs/data_acquisition.md) | Dataset-provider links and preparation boundaries |
+| [reproduction/README.md](reproduction/README.md) | Main-result pipeline, both backbones, input preparation and analysis |
 | [docs/coverage.md](docs/coverage.md) | What can be checked here and what is not distributed |
 | [configs/protocol.json](configs/protocol.json) | Machine-readable method settings |
 | [configs/feature_schema.json](configs/feature_schema.json) | Exact feature order |
@@ -57,6 +60,9 @@ the four matching values alone.
   functions, plus validated export I/O. Historical module names are retained
   to keep the native functions and imports intact.
 - `scripts/` contains the synthetic smoke and prepared-export entry points.
+- `reproduction/native/` contains the main-result dependency closure and data
+  producers; `reproduction/configs/` records the 12 backbone runs and 30
+  comparison-baseline configurations.
 - `tests/` checks export contracts and error handling.
 - `docs/native_training_selection.txt` preserves the original fitting and
   calibration excerpt for comparison with the runnable wrapper.
@@ -72,6 +78,9 @@ new exports tests those exports; it does not recreate the frozen paper cohort.
 The paper's complete-system comparisons use SASRec and SSD4Rec, while its
 fixed-pool matching and transition-source controls use SASRec. No new result,
 backbone-general matching claim or online-business result is supplied here.
+The original baseline search history is incomplete. SSD4Rec needs the pinned
+upstream blocks and a compatible Linux CUDA/Mamba environment. Source inclusion
+does not establish fresh-run metric equality or equal baseline tuning budgets.
 
 Source is provided under the existing [MIT license](LICENSE). Dataset and
 dependency rights remain with their respective providers; see [NOTICE.md](NOTICE.md).

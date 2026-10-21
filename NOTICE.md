@@ -11,6 +11,16 @@ Their license texts remain with their distributions. Official projects:
 [Python](https://www.python.org/), [NumPy](https://numpy.org/),
 [SciPy](https://scipy.org/), [CatBoost](https://catboost.ai/).
 
+The optional reproduction environment also uses [PyTorch](https://pytorch.org/),
+[LightGBM](https://github.com/microsoft/LightGBM),
+[Apache Arrow/PyArrow](https://arrow.apache.org/), [Numba](https://numba.pydata.org/)
+and [threadpoolctl](https://github.com/joblib/threadpoolctl). Their source and
+license texts remain with their distributions; none is vendored here.
+SSD4Rec execution additionally needs the upstream project blocks and compatible
+CUDA dependencies. `scripts/fetch_ssd4rec_source.py` fetches a pinned file from
+the [official SSD4Rec repository](https://github.com/ZhangYifeng1995/SSD4Rec)
+only when explicitly run. It does not grant additional rights to that source.
+
 The retrieval design uses reciprocal rank fusion; ranking uses CatBoost's
 metric-specific YetiRank. Bibliographic attribution remains in the accompanying
 manuscript. Dataset ownership and access conditions remain with the providers.

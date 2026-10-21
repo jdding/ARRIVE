@@ -1,0 +1,24 @@
+{
+  "_note": "Layout only, not saved paper results. Replace paths with your own outputs. Add the second dataset and SSD4Rec rows as needed; use all three seeds per row.",
+  "bootstrap_seed": 20261007,
+  "bootstrap_draws": {"sasrec": 5000, "ssd4rec": 10000},
+  "rankings": [
+    {"dataset": "music4all_onion", "backbone": "sasrec", "method": "backbone", "seed": 2024, "path": "../../outputs/onion/sasrec/s2024/backbone/predictions.npz"},
+    {"dataset": "music4all_onion", "backbone": "sasrec", "method": "backbone", "seed": 2025, "path": "../../outputs/onion/sasrec/s2025/backbone/predictions.npz"},
+    {"dataset": "music4all_onion", "backbone": "sasrec", "method": "backbone", "seed": 2026, "path": "../../outputs/onion/sasrec/s2026/backbone/predictions.npz"},
+    {"dataset": "music4all_onion", "backbone": "sasrec", "method": "arrive", "seed": 2024, "path": "../../outputs/onion/sasrec/s2024/arrive/predictions.npz"},
+    {"dataset": "music4all_onion", "backbone": "sasrec", "method": "arrive", "seed": 2025, "path": "../../outputs/onion/sasrec/s2025/arrive/predictions.npz"},
+    {"dataset": "music4all_onion", "backbone": "sasrec", "method": "arrive", "seed": 2026, "path": "../../outputs/onion/sasrec/s2026/arrive/predictions.npz"},
+    {"dataset": "music4all_onion", "backbone": "sasrec", "method": "removed", "seed": 2024, "path": "../../outputs/onion/sasrec/s2024/removed/predictions.npz"},
+    {"dataset": "music4all_onion", "backbone": "sasrec", "method": "removed", "seed": 2025, "path": "../../outputs/onion/sasrec/s2025/removed/predictions.npz"},
+    {"dataset": "music4all_onion", "backbone": "sasrec", "method": "removed", "seed": 2026, "path": "../../outputs/onion/sasrec/s2026/removed/predictions.npz"},
+    {"dataset": "music4all_onion", "backbone": "sasrec", "method": "mismatched", "seed": 2024, "path": "../../outputs/onion/sasrec/s2024/mismatched/predictions.npz"},
+    {"dataset": "music4all_onion", "backbone": "sasrec", "method": "mismatched", "seed": 2025, "path": "../../outputs/onion/sasrec/s2025/mismatched/predictions.npz"},
+    {"dataset": "music4all_onion", "backbone": "sasrec", "method": "mismatched", "seed": 2026, "path": "../../outputs/onion/sasrec/s2026/mismatched/predictions.npz"}
+  ],
+  "coverage": [
+    {"dataset": "music4all_onion", "seed": 2024, "path": "../../outputs/onion/sasrec/s2024/coverage/coverage.npz"},
+    {"dataset": "music4all_onion", "seed": 2025, "path": "../../outputs/onion/sasrec/s2025/coverage/coverage.npz"},
+    {"dataset": "music4all_onion", "seed": 2026, "path": "../../outputs/onion/sasrec/s2026/coverage/coverage.npz"}
+  ]
+}

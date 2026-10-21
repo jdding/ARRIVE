@@ -1,0 +1,1062 @@
+{
+  "schema": "arrive.recorded_comparison_settings.v1",
+  "records": [
+    {
+      "dataset": "music4all_onion",
+      "method": "cosernn",
+      "seed": 2024,
+      "configuration": {
+        "batch_size": 256,
+        "cosernn_fc_dim": 200,
+        "cosernn_hidden_dim": 400,
+        "dropout": 0.0,
+        "embed_dim": 40,
+        "epochs": 30,
+        "horizon": 64,
+        "learning_rate": 0.0005,
+        "max_context": 129,
+        "negative_samples": 1024,
+        "num_heads": 2,
+        "num_layers": 1,
+        "objective": "oneshot_only",
+        "seed": 2024
+      },
+      "optimizer": {
+        "beta2": 0.999,
+        "optimizer": "Adam",
+        "weight_decay": 0.0
+      },
+      "adapter_revision": "faithful20260912",
+      "selected_validation_epoch": 10,
+      "completed_epochs": 15,
+      "completed_updates": 17190,
+      "convergence_policy": {
+        "max_epochs": 30,
+        "min_delta": 0.0001,
+        "min_epochs": 15,
+        "patience": 5
+      },
+      "original_manifest_sha256": "4ebea29e0a3d62ee1bbaf1ecde9f6b8ee6aa12c34a2073691efbe9a74728df72"
+    },
+    {
+      "dataset": "music4all_onion",
+      "method": "cosernn",
+      "seed": 2025,
+      "configuration": {
+        "batch_size": 256,
+        "cosernn_fc_dim": 200,
+        "cosernn_hidden_dim": 400,
+        "dropout": 0.0,
+        "embed_dim": 40,
+        "epochs": 30,
+        "horizon": 64,
+        "learning_rate": 0.0005,
+        "max_context": 129,
+        "negative_samples": 1024,
+        "num_heads": 2,
+        "num_layers": 1,
+        "objective": "oneshot_only",
+        "seed": 2025
+      },
+      "optimizer": {
+        "beta2": 0.999,
+        "optimizer": "Adam",
+        "weight_decay": 0.0
+      },
+      "adapter_revision": "faithful20260912",
+      "selected_validation_epoch": 5,
+      "completed_epochs": 15,
+      "completed_updates": 17190,
+      "convergence_policy": {
+        "max_epochs": 30,
+        "min_delta": 0.0001,
+        "min_epochs": 15,
+        "patience": 5
+      },
+      "original_manifest_sha256": "66cc07ae598277a8d42c8eeb93fce20568ca1bba2ff5ebd4a7742335c71614f5"
+    },
+    {
+      "dataset": "music4all_onion",
+      "method": "cosernn",
+      "seed": 2026,
+      "configuration": {
+        "batch_size": 256,
+        "cosernn_fc_dim": 200,
+        "cosernn_hidden_dim": 400,
+        "dropout": 0.0,
+        "embed_dim": 40,
+        "epochs": 30,
+        "horizon": 64,
+        "learning_rate": 0.0005,
+        "max_context": 129,
+        "negative_samples": 1024,
+        "num_heads": 2,
+        "num_layers": 1,
+        "objective": "oneshot_only",
+        "seed": 2026
+      },
+      "optimizer": {
+        "beta2": 0.999,
+        "optimizer": "Adam",
+        "weight_decay": 0.0
+      },
+      "adapter_revision": "faithful20260912",
+      "selected_validation_epoch": 8,
+      "completed_epochs": 15,
+      "completed_updates": 17190,
+      "convergence_policy": {
+        "max_epochs": 30,
+        "min_delta": 0.0001,
+        "min_epochs": 15,
+        "patience": 5
+      },
+      "original_manifest_sha256": "0e30cb33072fdea84acc51b26ddefbdb3ff5421091e8246a0203330da87b3e55"
+    },
+    {
+      "dataset": "music4all_onion",
+      "method": "car",
+      "seed": 2024,
+      "configuration": {
+        "batch_size": 64,
+        "dropout": 0.2,
+        "embed_dim": 128,
+        "epochs": 30,
+        "learning_rate": 0.001,
+        "max_context": 129,
+        "negative_samples": 1024,
+        "num_heads": 2,
+        "num_layers": 2,
+        "objective": "oneshot_only",
+        "seed": 2024
+      },
+      "optimizer": {
+        "beta2": 0.98,
+        "optimizer": "Adam",
+        "weight_decay": 0.0
+      },
+      "adapter_revision": "audit20260912",
+      "selected_validation_epoch": 2,
+      "completed_epochs": 15,
+      "completed_updates": 68730,
+      "convergence_policy": {
+        "max_epochs": 30,
+        "min_delta": 0.0001,
+        "min_epochs": 15,
+        "patience": 5
+      },
+      "original_manifest_sha256": "904b26e16c2bc4674c8825b2be790da128e49d1a40b1fea674b5e18638f49e8b"
+    },
+    {
+      "dataset": "music4all_onion",
+      "method": "car",
+      "seed": 2025,
+      "configuration": {
+        "batch_size": 64,
+        "dropout": 0.2,
+        "embed_dim": 128,
+        "epochs": 30,
+        "learning_rate": 0.001,
+        "max_context": 129,
+        "negative_samples": 1024,
+        "num_heads": 2,
+        "num_layers": 2,
+        "objective": "oneshot_only",
+        "seed": 2025
+      },
+      "optimizer": {
+        "beta2": 0.98,
+        "optimizer": "Adam",
+        "weight_decay": 0.0
+      },
+      "adapter_revision": "audit20260912",
+      "selected_validation_epoch": 3,
+      "completed_epochs": 15,
+      "completed_updates": 68730,
+      "convergence_policy": {
+        "max_epochs": 30,
+        "min_delta": 0.0001,
+        "min_epochs": 15,
+        "patience": 5
+      },
+      "original_manifest_sha256": "39e667b16af91cc904abd0ac70fd5b7bfc7f589a8bf0e7deb83161ebfcc0ab53"
+    },
+    {
+      "dataset": "music4all_onion",
+      "method": "car",
+      "seed": 2026,
+      "configuration": {
+        "batch_size": 64,
+        "dropout": 0.2,
+        "embed_dim": 128,
+        "epochs": 30,
+        "learning_rate": 0.001,
+        "max_context": 129,
+        "negative_samples": 1024,
+        "num_heads": 2,
+        "num_layers": 2,
+        "objective": "oneshot_only",
+        "seed": 2026
+      },
+      "optimizer": {
+        "beta2": 0.98,
+        "optimizer": "Adam",
+        "weight_decay": 0.0
+      },
+      "adapter_revision": "audit20260912",
+      "selected_validation_epoch": 2,
+      "completed_epochs": 15,
+      "completed_updates": 68730,
+      "convergence_policy": {
+        "max_epochs": 30,
+        "min_delta": 0.0001,
+        "min_epochs": 15,
+        "patience": 5
+      },
+      "original_manifest_sha256": "59ddfc6b113b5685af722e440b9a4ab512f523c096ef792a34346bd6b402a23e"
+    },
+    {
+      "dataset": "music4all_onion",
+      "method": "megan",
+      "seed": 2024,
+      "configuration": {
+        "batch_size": 256,
+        "cosernn_fc_dim": 200,
+        "cosernn_hidden_dim": 400,
+        "dropout": 0.0,
+        "embed_dim": 256,
+        "epochs": 30,
+        "horizon": 64,
+        "learning_rate": 0.001,
+        "max_context": 129,
+        "negative_samples": 1024,
+        "num_heads": 2,
+        "num_layers": 1,
+        "objective": "oneshot_only",
+        "seed": 2024
+      },
+      "optimizer": {
+        "beta2": 0.999,
+        "optimizer": "Adam",
+        "weight_decay": 0.0
+      },
+      "adapter_revision": "faithful20260912",
+      "selected_validation_epoch": 8,
+      "completed_epochs": 15,
+      "completed_updates": 17190,
+      "convergence_policy": {
+        "max_epochs": 30,
+        "min_delta": 0.0001,
+        "min_epochs": 15,
+        "patience": 5
+      },
+      "original_manifest_sha256": "260c6d188d444d5592be7943a63dcea2b00bcf0dced0ba203b022992c31f791f"
+    },
+    {
+      "dataset": "music4all_onion",
+      "method": "megan",
+      "seed": 2025,
+      "configuration": {
+        "batch_size": 256,
+        "cosernn_fc_dim": 200,
+        "cosernn_hidden_dim": 400,
+        "dropout": 0.0,
+        "embed_dim": 256,
+        "epochs": 30,
+        "horizon": 64,
+        "learning_rate": 0.001,
+        "max_context": 129,
+        "negative_samples": 1024,
+        "num_heads": 2,
+        "num_layers": 1,
+        "objective": "oneshot_only",
+        "seed": 2025
+      },
+      "optimizer": {
+        "beta2": 0.999,
+        "optimizer": "Adam",
+        "weight_decay": 0.0
+      },
+      "adapter_revision": "faithful20260912",
+      "selected_validation_epoch": 8,
+      "completed_epochs": 15,
+      "completed_updates": 17190,
+      "convergence_policy": {
+        "max_epochs": 30,
+        "min_delta": 0.0001,
+        "min_epochs": 15,
+        "patience": 5
+      },
+      "original_manifest_sha256": "cc7d8bf314f44c832475cc5529d820feb4c2dbf9d38343aed994b66d6b8d6d14"
+    },
+    {
+      "dataset": "music4all_onion",
+      "method": "megan",
+      "seed": 2026,
+      "configuration": {
+        "batch_size": 256,
+        "cosernn_fc_dim": 200,
+        "cosernn_hidden_dim": 400,
+        "dropout": 0.0,
+        "embed_dim": 256,
+        "epochs": 30,
+        "horizon": 64,
+        "learning_rate": 0.001,
+        "max_context": 129,
+        "negative_samples": 1024,
+        "num_heads": 2,
+        "num_layers": 1,
+        "objective": "oneshot_only",
+        "seed": 2026
+      },
+      "optimizer": {
+        "beta2": 0.999,
+        "optimizer": "Adam",
+        "weight_decay": 0.0
+      },
+      "adapter_revision": "faithful20260912",
+      "selected_validation_epoch": 7,
+      "completed_epochs": 15,
+      "completed_updates": 17190,
+      "convergence_policy": {
+        "max_epochs": 30,
+        "min_delta": 0.0001,
+        "min_epochs": 15,
+        "patience": 5
+      },
+      "original_manifest_sha256": "fa2a6508732d6efb5ab6eca3ab607031f68c838e5dd0622a1538f28ace7578f5"
+    },
+    {
+      "dataset": "music4all_onion",
+      "method": "muse",
+      "seed": 2024,
+      "configuration": {
+        "batch_size": 64,
+        "dropout": 0.0,
+        "embed_dim": 128,
+        "epochs": 30,
+        "learning_rate": 0.001,
+        "max_context": 129,
+        "negative_samples": 1024,
+        "num_heads": 2,
+        "num_layers": 1,
+        "objective": "oneshot_only",
+        "seed": 2024
+      },
+      "optimizer": {
+        "beta2": 0.999,
+        "optimizer": "Adam",
+        "weight_decay": 0.0
+      },
+      "adapter_revision": "audit20260912",
+      "selected_validation_epoch": 4,
+      "completed_epochs": 15,
+      "completed_updates": 68730,
+      "convergence_policy": {
+        "max_epochs": 30,
+        "min_delta": 0.0001,
+        "min_epochs": 15,
+        "patience": 5
+      },
+      "original_manifest_sha256": "e78188301daecca487b99dc71ecf42b9b348d2a0c04d3a3ba9c6540964078589"
+    },
+    {
+      "dataset": "music4all_onion",
+      "method": "muse",
+      "seed": 2025,
+      "configuration": {
+        "batch_size": 64,
+        "dropout": 0.0,
+        "embed_dim": 128,
+        "epochs": 30,
+        "learning_rate": 0.001,
+        "max_context": 129,
+        "negative_samples": 1024,
+        "num_heads": 2,
+        "num_layers": 1,
+        "objective": "oneshot_only",
+        "seed": 2025
+      },
+      "optimizer": {
+        "beta2": 0.999,
+        "optimizer": "Adam",
+        "weight_decay": 0.0
+      },
+      "adapter_revision": "audit20260912",
+      "selected_validation_epoch": 5,
+      "completed_epochs": 15,
+      "completed_updates": 68730,
+      "convergence_policy": {
+        "max_epochs": 30,
+        "min_delta": 0.0001,
+        "min_epochs": 15,
+        "patience": 5
+      },
+      "original_manifest_sha256": "ab7db00bd60fdb318dabe31fdf8cea3f3f06ed37210f92a016180ee88c07867c"
+    },
+    {
+      "dataset": "music4all_onion",
+      "method": "muse",
+      "seed": 2026,
+      "configuration": {
+        "batch_size": 64,
+        "dropout": 0.0,
+        "embed_dim": 128,
+        "epochs": 30,
+        "learning_rate": 0.001,
+        "max_context": 129,
+        "negative_samples": 1024,
+        "num_heads": 2,
+        "num_layers": 1,
+        "objective": "oneshot_only",
+        "seed": 2026
+      },
+      "optimizer": {
+        "beta2": 0.999,
+        "optimizer": "Adam",
+        "weight_decay": 0.0
+      },
+      "adapter_revision": "audit20260912",
+      "selected_validation_epoch": 6,
+      "completed_epochs": 15,
+      "completed_updates": 68730,
+      "convergence_policy": {
+        "max_epochs": 30,
+        "min_delta": 0.0001,
+        "min_epochs": 15,
+        "patience": 5
+      },
+      "original_manifest_sha256": "d8b358d55dc849eb93fb39b62e00f5753e3f83f067711444eb7ae1334decc539"
+    },
+    {
+      "dataset": "music4all_onion",
+      "method": "tisasrec",
+      "seed": 2024,
+      "configuration": {
+        "batch_size": 64,
+        "dropout": 0.2,
+        "embed_dim": 128,
+        "epochs": 15,
+        "learning_rate": 0.001,
+        "max_context": 129,
+        "negative_samples": 1024,
+        "num_heads": 2,
+        "num_layers": 2,
+        "objective": "oneshot_only",
+        "seed": 2024
+      },
+      "optimizer": null,
+      "adapter_revision": null,
+      "selected_validation_epoch": 3,
+      "completed_epochs": 15,
+      "completed_updates": 68730,
+      "convergence_policy": null,
+      "original_manifest_sha256": "cf816c1334b676895f3f5fe1043943489ac8532f4195d6d3c7ccffcd35e1bbbd"
+    },
+    {
+      "dataset": "music4all_onion",
+      "method": "tisasrec",
+      "seed": 2025,
+      "configuration": {
+        "batch_size": 64,
+        "dropout": 0.2,
+        "embed_dim": 128,
+        "epochs": 15,
+        "learning_rate": 0.001,
+        "max_context": 129,
+        "negative_samples": 1024,
+        "num_heads": 2,
+        "num_layers": 2,
+        "objective": "oneshot_only",
+        "seed": 2025
+      },
+      "optimizer": null,
+      "adapter_revision": null,
+      "selected_validation_epoch": 2,
+      "completed_epochs": 15,
+      "completed_updates": 68730,
+      "convergence_policy": null,
+      "original_manifest_sha256": "fdeccf4a7954e1f130398e03e0bae020e0910f8fa9cf5887d9553a778688dd65"
+    },
+    {
+      "dataset": "music4all_onion",
+      "method": "tisasrec",
+      "seed": 2026,
+      "configuration": {
+        "batch_size": 64,
+        "dropout": 0.2,
+        "embed_dim": 128,
+        "epochs": 15,
+        "learning_rate": 0.001,
+        "max_context": 129,
+        "negative_samples": 1024,
+        "num_heads": 2,
+        "num_layers": 2,
+        "objective": "oneshot_only",
+        "seed": 2026
+      },
+      "optimizer": null,
+      "adapter_revision": null,
+      "selected_validation_epoch": 2,
+      "completed_epochs": 15,
+      "completed_updates": 68730,
+      "convergence_policy": null,
+      "original_manifest_sha256": "ec3f5f85089434e7e0cc8e231cf97503c484f0cc76d8106e96e8f563e4f0914d"
+    },
+    {
+      "dataset": "yambda500m",
+      "method": "cosernn",
+      "seed": 2024,
+      "configuration": {
+        "batch_size": 256,
+        "cosernn_fc_dim": 200,
+        "cosernn_hidden_dim": 400,
+        "dropout": 0.0,
+        "embed_dim": 40,
+        "epochs": 15,
+        "horizon": 64,
+        "learning_rate": 0.001,
+        "max_context": 129,
+        "negative_samples": 1024,
+        "num_heads": 2,
+        "num_layers": 1,
+        "objective": "oneshot_only",
+        "seed": 2024
+      },
+      "optimizer": {
+        "beta2": 0.999,
+        "optimizer": "Adam",
+        "weight_decay": 0.0
+      },
+      "adapter_revision": "faithful20260912",
+      "selected_validation_epoch": 11,
+      "completed_epochs": 15,
+      "completed_updates": 1020,
+      "convergence_policy": {
+        "max_epochs": 15,
+        "min_delta": 0.0,
+        "min_epochs": 0,
+        "patience": 0
+      },
+      "original_manifest_sha256": "1b9229531b3182d9f248b26fa2dea9f2a365394d709d5b870c9a537a5f2698df"
+    },
+    {
+      "dataset": "yambda500m",
+      "method": "cosernn",
+      "seed": 2025,
+      "configuration": {
+        "batch_size": 256,
+        "cosernn_fc_dim": 200,
+        "cosernn_hidden_dim": 400,
+        "dropout": 0.0,
+        "embed_dim": 40,
+        "epochs": 15,
+        "horizon": 64,
+        "learning_rate": 0.001,
+        "max_context": 129,
+        "negative_samples": 1024,
+        "num_heads": 2,
+        "num_layers": 1,
+        "objective": "oneshot_only",
+        "seed": 2025
+      },
+      "optimizer": {
+        "beta2": 0.999,
+        "optimizer": "Adam",
+        "weight_decay": 0.0
+      },
+      "adapter_revision": "faithful20260912",
+      "selected_validation_epoch": 10,
+      "completed_epochs": 15,
+      "completed_updates": 1020,
+      "convergence_policy": {
+        "max_epochs": 15,
+        "min_delta": 0.0,
+        "min_epochs": 0,
+        "patience": 0
+      },
+      "original_manifest_sha256": "fea499f2c39235e19112b90d3bf0e44846e13885935a6a0346f1b008ede15158"
+    },
+    {
+      "dataset": "yambda500m",
+      "method": "cosernn",
+      "seed": 2026,
+      "configuration": {
+        "batch_size": 256,
+        "cosernn_fc_dim": 200,
+        "cosernn_hidden_dim": 400,
+        "dropout": 0.0,
+        "embed_dim": 40,
+        "epochs": 15,
+        "horizon": 64,
+        "learning_rate": 0.001,
+        "max_context": 129,
+        "negative_samples": 1024,
+        "num_heads": 2,
+        "num_layers": 1,
+        "objective": "oneshot_only",
+        "seed": 2026
+      },
+      "optimizer": {
+        "beta2": 0.999,
+        "optimizer": "Adam",
+        "weight_decay": 0.0
+      },
+      "adapter_revision": "faithful20260912",
+      "selected_validation_epoch": 9,
+      "completed_epochs": 15,
+      "completed_updates": 1020,
+      "convergence_policy": {
+        "max_epochs": 15,
+        "min_delta": 0.0,
+        "min_epochs": 0,
+        "patience": 0
+      },
+      "original_manifest_sha256": "c86cba8a4ac7849b4cc4fac443065c31bfe2a712c30380771270687bda433d6a"
+    },
+    {
+      "dataset": "yambda500m",
+      "method": "car",
+      "seed": 2024,
+      "configuration": {
+        "batch_size": 64,
+        "cosernn_fc_dim": 200,
+        "cosernn_hidden_dim": 400,
+        "dropout": 0.2,
+        "embed_dim": 128,
+        "epochs": 15,
+        "horizon": 64,
+        "learning_rate": 0.001,
+        "max_context": 129,
+        "negative_samples": 1024,
+        "num_heads": 2,
+        "num_layers": 2,
+        "objective": "oneshot_only",
+        "seed": 2024
+      },
+      "optimizer": {
+        "beta2": 0.98,
+        "optimizer": "Adam",
+        "weight_decay": 0.0
+      },
+      "adapter_revision": "audit20260912",
+      "selected_validation_epoch": 12,
+      "completed_epochs": 15,
+      "completed_updates": 4080,
+      "convergence_policy": {
+        "max_epochs": 15,
+        "min_delta": 0.0,
+        "min_epochs": 0,
+        "patience": 0
+      },
+      "original_manifest_sha256": "9e258d92777236c0372ff5a6763ec0f38cadca4a8d53df7c82473b239d834724"
+    },
+    {
+      "dataset": "yambda500m",
+      "method": "car",
+      "seed": 2025,
+      "configuration": {
+        "batch_size": 64,
+        "cosernn_fc_dim": 200,
+        "cosernn_hidden_dim": 400,
+        "dropout": 0.2,
+        "embed_dim": 128,
+        "epochs": 15,
+        "horizon": 64,
+        "learning_rate": 0.001,
+        "max_context": 129,
+        "negative_samples": 1024,
+        "num_heads": 2,
+        "num_layers": 2,
+        "objective": "oneshot_only",
+        "seed": 2025
+      },
+      "optimizer": {
+        "beta2": 0.98,
+        "optimizer": "Adam",
+        "weight_decay": 0.0
+      },
+      "adapter_revision": "audit20260912",
+      "selected_validation_epoch": 11,
+      "completed_epochs": 15,
+      "completed_updates": 4080,
+      "convergence_policy": {
+        "max_epochs": 15,
+        "min_delta": 0.0,
+        "min_epochs": 0,
+        "patience": 0
+      },
+      "original_manifest_sha256": "d55c77fcff5fb6585d006b32cdf40253e03fa41783cfad3ba631e3159da692ae"
+    },
+    {
+      "dataset": "yambda500m",
+      "method": "car",
+      "seed": 2026,
+      "configuration": {
+        "batch_size": 64,
+        "cosernn_fc_dim": 200,
+        "cosernn_hidden_dim": 400,
+        "dropout": 0.2,
+        "embed_dim": 128,
+        "epochs": 15,
+        "horizon": 64,
+        "learning_rate": 0.001,
+        "max_context": 129,
+        "negative_samples": 1024,
+        "num_heads": 2,
+        "num_layers": 2,
+        "objective": "oneshot_only",
+        "seed": 2026
+      },
+      "optimizer": {
+        "beta2": 0.98,
+        "optimizer": "Adam",
+        "weight_decay": 0.0
+      },
+      "adapter_revision": "audit20260912",
+      "selected_validation_epoch": 11,
+      "completed_epochs": 15,
+      "completed_updates": 4080,
+      "convergence_policy": {
+        "max_epochs": 15,
+        "min_delta": 0.0,
+        "min_epochs": 0,
+        "patience": 0
+      },
+      "original_manifest_sha256": "20253706b8bcf511395d62c6e6db745c4d6a9e37aeb9a4ec02b5c5c661599805"
+    },
+    {
+      "dataset": "yambda500m",
+      "method": "megan",
+      "seed": 2024,
+      "configuration": {
+        "batch_size": 256,
+        "cosernn_fc_dim": 200,
+        "cosernn_hidden_dim": 400,
+        "dropout": 0.2,
+        "embed_dim": 256,
+        "epochs": 15,
+        "horizon": 64,
+        "learning_rate": 0.001,
+        "max_context": 129,
+        "negative_samples": 1024,
+        "num_heads": 2,
+        "num_layers": 2,
+        "objective": "oneshot_only",
+        "seed": 2024
+      },
+      "optimizer": {
+        "beta2": 0.999,
+        "optimizer": "Adam",
+        "weight_decay": 0.0
+      },
+      "adapter_revision": "faithful20260912",
+      "selected_validation_epoch": 13,
+      "completed_epochs": 15,
+      "completed_updates": 1020,
+      "convergence_policy": {
+        "max_epochs": 15,
+        "min_delta": 0.0,
+        "min_epochs": 0,
+        "patience": 0
+      },
+      "original_manifest_sha256": "ade5fb4c3875b603cf4a2d266311a96f165542c89bdf57908953986051fb0c6a"
+    },
+    {
+      "dataset": "yambda500m",
+      "method": "megan",
+      "seed": 2025,
+      "configuration": {
+        "batch_size": 256,
+        "cosernn_fc_dim": 200,
+        "cosernn_hidden_dim": 400,
+        "dropout": 0.2,
+        "embed_dim": 256,
+        "epochs": 15,
+        "horizon": 64,
+        "learning_rate": 0.001,
+        "max_context": 129,
+        "negative_samples": 1024,
+        "num_heads": 2,
+        "num_layers": 2,
+        "objective": "oneshot_only",
+        "seed": 2025
+      },
+      "optimizer": {
+        "beta2": 0.999,
+        "optimizer": "Adam",
+        "weight_decay": 0.0
+      },
+      "adapter_revision": "faithful20260912",
+      "selected_validation_epoch": 9,
+      "completed_epochs": 15,
+      "completed_updates": 1020,
+      "convergence_policy": {
+        "max_epochs": 15,
+        "min_delta": 0.0,
+        "min_epochs": 0,
+        "patience": 0
+      },
+      "original_manifest_sha256": "980115b8bf2ac510ac5194f2472f5d522f1d973353939fff8803e1457c878c5b"
+    },
+    {
+      "dataset": "yambda500m",
+      "method": "megan",
+      "seed": 2026,
+      "configuration": {
+        "batch_size": 256,
+        "cosernn_fc_dim": 200,
+        "cosernn_hidden_dim": 400,
+        "dropout": 0.2,
+        "embed_dim": 256,
+        "epochs": 15,
+        "horizon": 64,
+        "learning_rate": 0.001,
+        "max_context": 129,
+        "negative_samples": 1024,
+        "num_heads": 2,
+        "num_layers": 2,
+        "objective": "oneshot_only",
+        "seed": 2026
+      },
+      "optimizer": {
+        "beta2": 0.999,
+        "optimizer": "Adam",
+        "weight_decay": 0.0
+      },
+      "adapter_revision": "faithful20260912",
+      "selected_validation_epoch": 12,
+      "completed_epochs": 15,
+      "completed_updates": 1020,
+      "convergence_policy": {
+        "max_epochs": 15,
+        "min_delta": 0.0,
+        "min_epochs": 0,
+        "patience": 0
+      },
+      "original_manifest_sha256": "c3bbd318ebf5dbed7b9bc873d7d2b538e319ca4f411b7f25ae16967bbb11f038"
+    },
+    {
+      "dataset": "yambda500m",
+      "method": "muse",
+      "seed": 2024,
+      "configuration": {
+        "batch_size": 64,
+        "cosernn_fc_dim": 200,
+        "cosernn_hidden_dim": 400,
+        "dropout": 0.0,
+        "embed_dim": 128,
+        "epochs": 15,
+        "horizon": 64,
+        "learning_rate": 0.001,
+        "max_context": 129,
+        "negative_samples": 1024,
+        "num_heads": 2,
+        "num_layers": 2,
+        "objective": "oneshot_only",
+        "seed": 2024
+      },
+      "optimizer": {
+        "beta2": 0.999,
+        "optimizer": "AdamW",
+        "weight_decay": 0.0001
+      },
+      "adapter_revision": "audit20260912",
+      "selected_validation_epoch": 15,
+      "completed_epochs": 15,
+      "completed_updates": 4080,
+      "convergence_policy": {
+        "max_epochs": 15,
+        "min_delta": 0.0,
+        "min_epochs": 0,
+        "patience": 0
+      },
+      "original_manifest_sha256": "5cf447183e80730f66c51d5f9ae18ad91578fd182a28a46b3c05238b0a78fa2a"
+    },
+    {
+      "dataset": "yambda500m",
+      "method": "muse",
+      "seed": 2025,
+      "configuration": {
+        "batch_size": 64,
+        "cosernn_fc_dim": 200,
+        "cosernn_hidden_dim": 400,
+        "dropout": 0.0,
+        "embed_dim": 128,
+        "epochs": 15,
+        "horizon": 64,
+        "learning_rate": 0.001,
+        "max_context": 129,
+        "negative_samples": 1024,
+        "num_heads": 2,
+        "num_layers": 2,
+        "objective": "oneshot_only",
+        "seed": 2025
+      },
+      "optimizer": {
+        "beta2": 0.999,
+        "optimizer": "AdamW",
+        "weight_decay": 0.0001
+      },
+      "adapter_revision": "audit20260912",
+      "selected_validation_epoch": 15,
+      "completed_epochs": 15,
+      "completed_updates": 4080,
+      "convergence_policy": {
+        "max_epochs": 15,
+        "min_delta": 0.0,
+        "min_epochs": 0,
+        "patience": 0
+      },
+      "original_manifest_sha256": "bf58f072db47c166a17f3892657aa57283edf6a40b15451397c96617aaeadf69"
+    },
+    {
+      "dataset": "yambda500m",
+      "method": "muse",
+      "seed": 2026,
+      "configuration": {
+        "batch_size": 64,
+        "cosernn_fc_dim": 200,
+        "cosernn_hidden_dim": 400,
+        "dropout": 0.0,
+        "embed_dim": 128,
+        "epochs": 15,
+        "horizon": 64,
+        "learning_rate": 0.001,
+        "max_context": 129,
+        "negative_samples": 1024,
+        "num_heads": 2,
+        "num_layers": 2,
+        "objective": "oneshot_only",
+        "seed": 2026
+      },
+      "optimizer": {
+        "beta2": 0.999,
+        "optimizer": "AdamW",
+        "weight_decay": 0.0001
+      },
+      "adapter_revision": "audit20260912",
+      "selected_validation_epoch": 15,
+      "completed_epochs": 15,
+      "completed_updates": 4080,
+      "convergence_policy": {
+        "max_epochs": 15,
+        "min_delta": 0.0,
+        "min_epochs": 0,
+        "patience": 0
+      },
+      "original_manifest_sha256": "f94415c86ed50e1170516e934a00e1e5fd75eae90013382747d10f9630e0a83e"
+    },
+    {
+      "dataset": "yambda500m",
+      "method": "tisasrec",
+      "seed": 2024,
+      "configuration": {
+        "batch_size": 64,
+        "cosernn_fc_dim": 200,
+        "cosernn_hidden_dim": 400,
+        "dropout": 0.2,
+        "embed_dim": 128,
+        "epochs": 15,
+        "horizon": 64,
+        "learning_rate": 0.001,
+        "max_context": 129,
+        "negative_samples": 1024,
+        "num_heads": 2,
+        "num_layers": 2,
+        "objective": "oneshot_only",
+        "seed": 2024
+      },
+      "optimizer": {
+        "beta2": 0.999,
+        "optimizer": "AdamW",
+        "weight_decay": 0.0001
+      },
+      "adapter_revision": "audit20260912",
+      "selected_validation_epoch": 6,
+      "completed_epochs": 15,
+      "completed_updates": 4080,
+      "convergence_policy": {
+        "max_epochs": 15,
+        "min_delta": 0.0,
+        "min_epochs": 0,
+        "patience": 0
+      },
+      "original_manifest_sha256": "94791f30abac1a7405ed98d6a63b5aa250c923cb672611e1ba2fee6099f5a416"
+    },
+    {
+      "dataset": "yambda500m",
+      "method": "tisasrec",
+      "seed": 2025,
+      "configuration": {
+        "batch_size": 64,
+        "cosernn_fc_dim": 200,
+        "cosernn_hidden_dim": 400,
+        "dropout": 0.2,
+        "embed_dim": 128,
+        "epochs": 15,
+        "horizon": 64,
+        "learning_rate": 0.001,
+        "max_context": 129,
+        "negative_samples": 1024,
+        "num_heads": 2,
+        "num_layers": 2,
+        "objective": "oneshot_only",
+        "seed": 2025
+      },
+      "optimizer": {
+        "beta2": 0.999,
+        "optimizer": "AdamW",
+        "weight_decay": 0.0001
+      },
+      "adapter_revision": "audit20260912",
+      "selected_validation_epoch": 5,
+      "completed_epochs": 15,
+      "completed_updates": 4080,
+      "convergence_policy": {
+        "max_epochs": 15,
+        "min_delta": 0.0,
+        "min_epochs": 0,
+        "patience": 0
+      },
+      "original_manifest_sha256": "ff5be388a735b07c70cf5e158f601b0ce2f0140bc1a3ee3a02edba8f3a2467b4"
+    },
+    {
+      "dataset": "yambda500m",
+      "method": "tisasrec",
+      "seed": 2026,
+      "configuration": {
+        "batch_size": 64,
+        "cosernn_fc_dim": 200,
+        "cosernn_hidden_dim": 400,
+        "dropout": 0.2,
+        "embed_dim": 128,
+        "epochs": 15,
+        "horizon": 64,
+        "learning_rate": 0.001,
+        "max_context": 129,
+        "negative_samples": 1024,
+        "num_heads": 2,
+        "num_layers": 2,
+        "objective": "oneshot_only",
+        "seed": 2026
+      },
+      "optimizer": {
+        "beta2": 0.999,
+        "optimizer": "AdamW",
+        "weight_decay": 0.0001
+      },
+      "adapter_revision": "audit20260912",
+      "selected_validation_epoch": 7,
+      "completed_epochs": 15,
+      "completed_updates": 4080,
+      "convergence_policy": {
+        "max_epochs": 15,
+        "min_delta": 0.0,
+        "min_epochs": 0,
+        "patience": 0
+      },
+      "original_manifest_sha256": "e367ec10d5dc0c240448f93e9880d1ef54da839fab798c561235357e2d955453"
+    }
+  ],
+  "note": "Null and absent fields are unrecorded. Method-specific budgets do not establish equal tuning."
+}

@@ -1,0 +1,42 @@
+{
+  "schema": "genrec.arrive_dataset_contract.v1",
+  "dataset_id": "music4all_onion_prepared_v1",
+  "prepared_schema": "genrec.music4all_onion.prepared.v1",
+  "target": "distinct_later_tracks_in_same_return_session",
+  "test_accessed": false,
+  "note": "This training contract reads Train/Validation only; project Test was already opened and is not fresh confirmation.",
+  "methods": {
+    "car": {
+      "source": "official CAR bc61c20b4a8b3bd4db67974b4ed1578409e79822",
+      "report_label": "CAR-no-user (task adapted)",
+      "mechanism": "CPPM/GUPM/identity three-way gating, independent gating attention, abs consistency, FFN and native BPR",
+      "adaptation": "Observed-prefix context and episode-weighted distinct suffix positives; creator branch disabled; uniform negatives exclude observed and suffix positives"
+    },
+    "muse": {
+      "source": "yunhak0/MUSE@6fdca43d3de1f9489464d80be359c146e71b48d6",
+      "report_label": "MUSE (observed-prefix task adaptation)",
+      "mechanism": "item-node alias SRGNN; transition augmentation; bidirectional top5 alignment and identity VICReg; one epoch warmup",
+      "adaptation": "No shuffle labels available; transition branch applied within observed sessions. At most129 real visible events plus synthetic bridges up to257. Return anchor preserved. Episode set-target sampled objective."
+    },
+    "tisasrec": {
+      "source": "previously mapped relative-time K/V source",
+      "mechanism": "relative time key/value self-attention"
+    },
+    "ssd4rec": {
+      "source": "pinned official SSD4Rec",
+      "mechanism": "official bidirectional Mamba2"
+    },
+    "cosernn": {
+      "source": "spotify-research/cosernn plus RecSys 2020 paper-defined Plays ablation",
+      "report_label": "CoSeRNN-Plays-Time (ARRIVE task adaptation)",
+      "mechanism": "fixed Train successor-track space; played-session recurrence; recency long-term fusion; cosine session target",
+      "adaptation": "published played-only pathway with available time/count/gap context; no fabricated skip/device/source fields"
+    },
+    "megan": {
+      "source": "Wang et al., TOIS 42(1), DOI 10.1145/3592853; equations cross-checked against same-authors disclosure CN114969547B",
+      "report_label": "MEGAN (ARRIVE task adaptation)",
+      "mechanism": "Train-only heterogeneous music graph; LINE first- and second-order initialization; seven relation-specific graph-attention views; semantic fusion; candidate-history short-term attention; learned long/short/dynamic preference fusion",
+      "adaptation": "Music4All user, session, track and metadata-feature nodes with frozen weighted neighbor samples; observed pre-hiatus history plus true return anchor; episode set-target sampled objective and shared full-catalog evaluator"
+    }
+  }
+}

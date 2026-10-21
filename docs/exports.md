@@ -2,8 +2,10 @@
 
 These entry points start after backbone scoring, candidate retrieval and feature
 construction. They fit and evaluate the ARRIVE ranker on supplied arrays; they
-do not prepare Music4All-Onion/Yambda, train SASRec/SSD4Rec, or reproduce the
-paper's frozen results. The raw-event export producer is not included.
+do not themselves prepare Music4All-Onion/Yambda or train SASRec/SSD4Rec.
+Those upstream producers are included separately; follow the
+[reproduction guide](../reproduction/README.md) before using this interface.
+No frozen paper results are supplied or certified as freshly reproduced.
 
 Install the dependencies in the [quickstart](../ARTIFACT_QUICKSTART.md) first.
 All commands below run from the repository root. Output directories must not
