@@ -18,7 +18,7 @@ def main():
     args = parser.parse_args()
     arguments = args.arguments[1:] if args.arguments[:1] == ["--"] else args.arguments
     environment = os.environ.copy()
-    environment.update(ARRIVE_TOOLS=str(native), ARRIVE_CUE_RANKER_PATH=str(native / "run_arrive_recent_ranker.py"),
+    environment.update(PYTHONDONTWRITEBYTECODE="1", ARRIVE_TOOLS=str(native), ARRIVE_CUE_RANKER_PATH=str(native / "run_arrive_recent_ranker.py"),
                        ARRIVE_CUE_DONOR_PATH=str(native / "arrive_cue_donors.py"))
     result = subprocess.run([sys.executable, str(native / (args.module + ".py")), *arguments], env=environment)
     raise SystemExit(result.returncode)

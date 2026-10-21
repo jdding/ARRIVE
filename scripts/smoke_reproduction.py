@@ -2,6 +2,7 @@
 """Check native export -> catalog -> three ranker arms on synthetic data only."""
 import hashlib
 import json
+import os
 import shutil
 import subprocess
 import sys
@@ -25,7 +26,8 @@ def save_json(path, value):
 
 def run(*arguments):
     result = subprocess.run([sys.executable, *map(str, arguments)], cwd=REPO,
-                            capture_output=True, text=True, timeout=90)
+                            capture_output=True, text=True, timeout=90,
+                            env={**os.environ, "PYTHONDONTWRITEBYTECODE": "1"})
     if result.returncode:
         raise RuntimeError(f"{arguments}\n{result.stdout}\n{result.stderr}")
 
