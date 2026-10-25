@@ -99,7 +99,7 @@ def contrast(left, right, users, mask, draws, random_seed):
 
 def summarize(config, base):
     random_seed = config.get("bootstrap_seed", 20261007)
-    draws = config.get("bootstrap_draws", {"sasrec": 5000, "ssd4rec": 10000})
+    draws = config.get("bootstrap_draws", {"sasrec": 10000, "ssd4rec": 10000})
     if not isinstance(random_seed, int) or any(type(v) is not int or v < 1 for v in draws.values()):
         raise ValueError("bootstrap_configuration")
     groups = {}
@@ -136,13 +136,17 @@ def summarize(config, base):
             b = [groups[bkey][s] for s in SEEDS]
             align(a + b)
             result = dict(dataset=dataset, backbone=backbone, contrast="arrive_minus_" + control)
-            count = draws.get(backbone, 5000)
+            count = draws.get(backbone, 10000)
             for metric in ("recall", "ndcg"):
                 left, right = [np.asarray([r[metric] for r in records]) for records in (a, b)]
                 result[metric] = contrast(left, right, users, all_rows, count, random_seed)
                 result[metric]["interval_role"] = ("Bonferroni_four_NDCG_contrasts" if
-                    backbone == "sasrec" and control in ("removed", "mismatched") and metric == "ndcg"
+                    backbone in ("sasrec", "ssd4rec") and control in ("removed", "mismatched") and metric == "ndcg"
                     else "descriptive_95_percent")
+                if result[metric]["interval_role"] == "Bonferroni_four_NDCG_contrasts":
+                    result[metric]["interval_family"] = (
+                        "sasrec_prespecified_four_matching_contrasts" if backbone == "sasrec"
+                        else "ssd4rec_followup_four_matching_contrasts")
             if control == "backbone":
                 left, right = [np.asarray([r["ndcg"] for r in records]) for records in (a, b)]
                 user_ids, delta = user_values((left - right).mean(axis=0), users)
@@ -174,7 +178,7 @@ def summarize(config, base):
             align(b + c)
             comparisons.append(dict(dataset=dataset, backbone=backbone, contrast="mismatched_minus_removed",
                 ndcg=contrast(np.asarray([r["ndcg"] for r in c]), np.asarray([r["ndcg"] for r in b]),
-                    users, all_rows, draws.get(backbone, 5000), random_seed)))
+                    users, all_rows, draws.get(backbone, 10000), random_seed)))
     coverage_groups = {}
     for entry in config.get("coverage", []):
         key, seed = entry["dataset"], entry["seed"]
@@ -206,7 +210,7 @@ def summarize(config, base):
             full = np.asarray([transform(r["full_coverage"]) for r in records])
             removed = np.asarray([transform(r["removed_coverage"]) for r in records])
             result[name] = dict(full=summary(full, users), removed=summary(removed, users),
-                paired=contrast(full, removed, users, np.ones(len(users), bool), draws.get("sasrec", 5000), random_seed))
+                paired=contrast(full, removed, users, np.ones(len(users), bool), draws.get("sasrec", 10000), random_seed))
         coverage.append(result)
     if not groups and not coverage_groups:
         raise ValueError("no_saved_results")

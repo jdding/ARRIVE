@@ -143,12 +143,15 @@ labels.
 Metrics first average requests within each user, then average users. Paper
 results average seeds 2024--2026 and report sample SD (`ddof=1`). Paired analysis
 averages matched-seed differences per user before resampling users with
-replacement. SASRec-backed comparisons use 5,000 draws; SSD4Rec comparisons use
-10,000. These intervals condition on the fitted models and do not estimate
+replacement. Both SASRec and SSD4Rec comparisons use 10,000 draws. These
+intervals condition on the fitted models and do not estimate
 variation from retraining on new population samples.
 
-The four main NDCG matching contrasts (A--B and A--C on two datasets) use
-Bonferroni-adjusted 98.75% intervals. Mismatch--removal, Recall, subgroups, and
+The four prespecified SASRec NDCG matching contrasts (A--B and A--C on two
+datasets) use Bonferroni-adjusted 98.75% intervals. The four SSD4Rec follow-up
+contrasts form a separate family with the same adjustment. This does not assert
+one joint 5% family-wise error bound over all eight contrasts.
+Mismatch--removal, Recall, subgroups, and
 candidate-coverage intervals are descriptive 95% intervals. Users may enter
 multiple strata; stratified analyses average requests within each user and
 stratum. `summarize_results.py` implements this aggregation and interval
@@ -159,6 +162,6 @@ analysis on saved predictions; the paper's original predictions are not supplied
 | Paper result | Protocol | Included helpers / limits |
 |---|---|---|
 | Table 1 | Full ARRIVE compared with its actual matched backbone checkpoint; three seeds | Both backbone source chains, comparison adapters, export/ranking/evaluation and summary code are included. Data, paper models and original outputs are not distributed. |
-| Table 2 | SASRec-backed A/B/C comparison with fixed pools and identical fitting requests | Four-column removal and wrong-song treatment are included. A reuses Table 1's SASRec-backed models and outputs; paper controls and intervals are not reproduced. |
+| Table 2 | SASRec and SSD4Rec A/B/C comparisons with fixed pools and identical fitting requests within each comparison | Four-column removal and wrong-song treatment are included. SASRec A reuses Table 1's models. SSD4Rec uses separate backbone checkpoints and refitted rankers from Table 1; pair A/B/C within that follow-up. Original paper predictions and intervals are not distributed. |
 | Table 3 | SASRec-backed source replay with and without first-song transitions | The other three sources, 200-song budget, and protected backbone Top-10 stay fixed. The paper's replay needed no padding. Real source exports and coverage results are omitted. |
 | User analyses | Seed-averaged paired per-user gains and within-user/stratum averages | Summary code includes paired intervals, harm/zero/improvement, strata and ECDF coordinates. Original predictions and figure styling are not distributed. |

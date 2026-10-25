@@ -75,9 +75,10 @@ not assume that every tree in a saved model was selected for evaluation.
 
 Synthetic checks test implementation behavior. Running these entry points on
 new exports tests those exports; it does not recreate the frozen paper cohort.
-The paper's complete-system comparisons use SASRec and SSD4Rec, while its
-fixed-pool matching and transition-source controls use SASRec. No new result,
-backbone-general matching claim or online-business result is supplied here.
+The paper's complete-system and fixed-pool matching comparisons use SASRec and
+SSD4Rec. Transition-source coverage controls use SASRec. In Table 2, the SASRec
+ARRIVE arm reuses Table 1's models; the SSD4Rec follow-up uses separate backbone
+checkpoints and refitted rankers. No online-business result is supplied here.
 The original baseline search history is incomplete. SSD4Rec needs the pinned
 upstream blocks and a compatible Linux CUDA/Mamba environment. Source inclusion
 does not establish fresh-run metric equality or equal baseline tuning budgets.

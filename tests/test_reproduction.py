@@ -102,6 +102,20 @@ class ResultSummaryTests(unittest.TestCase):
             with self.assertRaisesRegex(ValueError, "paired_cohort_difference"):
                 summarize(config, root)
 
+    def test_default_draws_and_matching_families_for_both_backbones(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            config = self.fixture(root)
+            config.pop("bootstrap_draws")
+            config["rankings"] += [{**row, "backbone": "ssd4rec"} for row in config["rankings"]]
+            result = summarize(config, root)
+            for row in result["paired_comparisons"]:
+                self.assertEqual(row["ndcg"]["bootstrap_draws"], 10000)
+                if row["contrast"] in ("arrive_minus_removed", "arrive_minus_mismatched"):
+                    self.assertEqual(row["ndcg"]["interval_role"], "Bonferroni_four_NDCG_contrasts")
+                    self.assertTrue(row["ndcg"]["interval_family"].startswith(row["backbone"]))
+                    self.assertEqual(row["recall"]["interval_role"], "descriptive_95_percent")
+
     def test_hash_and_duplicate_prediction_checks(self):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)

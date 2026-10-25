@@ -290,8 +290,12 @@ python scripts/replay_coverage.py --export TEST_EXPORT --output COVERAGE_EVALUAT
 The first uses the **same frozen source backbone**, not a separately retrained
 baseline. The second removes only the first-song transition source, refills to
 200 and keeps backbone Top-10 protection. Source coverage is not Top-10 ranking.
-Run paper controls/coverage for SASRec; the paper did not establish these
-attributions for SSD4Rec.
+Run fixed-pool matching controls for both SASRec and SSD4Rec. Within each
+backbone's A/B/C comparison, retain the same candidate pools, fitting requests,
+other 27 inputs and Train-internal selection rule. The SSD4Rec Table 2 follow-up
+uses separate backbone checkpoints and refitted rankers from Table 1; its ARRIVE
+arm must not be replaced with Table 1's outputs. Run Table 3 source-coverage
+replay for SASRec.
 
 Prepare an analysis JSON with `rankings` entries containing `dataset`,
 `backbone`, `method`, `seed` and `path` to each saved prediction NPZ. Methods are
@@ -308,10 +312,14 @@ analysis JSON. A layout example is [results.example.json](configs/results.exampl
 python scripts/summarize_results.py --config MY_RESULTS.json --output outputs/summary
 ```
 
-`summary.json` supplies Table 1/2 ranking means and sample SD; four predeclared
-SASRec NDCG contrasts use 98.75% intervals, while other comparisons and Table 3
-coverage use descriptive 95% intervals. Matched-seed per-user differences are
-averaged before user bootstrap (5,000 SASRec, 10,000 SSD4Rec draws). It also
+`summary.json` supplies Table 1/2 ranking means and sample SD. The four
+prespecified SASRec NDCG matching contrasts and the four SSD4Rec follow-up
+contrasts are adjusted as separate families, each using 98.75% intervals.
+Other comparisons and Table 3 coverage use descriptive 95% intervals.
+Matched-seed per-user differences are averaged before 10,000 user bootstrap
+draws for both backbones. The default settings and example config follow this
+current protocol; historical native analysis scripts retain their original
+settings. It also
 provides harmed/unchanged/improved shares, the four gap and four target-count
 strata, Recall among NDCG-harmed users, optional cue-availability groups, and
 unsmoothed user-gain ECDF coordinates for Figure 2. All denominators include
