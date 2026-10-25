@@ -440,8 +440,17 @@
     "scripts/summarize_results.py": "a14eb98e906c6e8ce0206817a93835dfb19cc560a3b0847286b53996868e8033",
     "scripts/train_backbone.py": "84a6a6326a75af60d23ef81cfd68fe98a6e251b82baad503f4ea1e0af77226f5",
     "scripts/train_ranker.py": "72ec4114aedebdc2b96bef18e7831afafb4baa785eaa0d4d78410f0dbc595dd4",
-    "tools/result_summary.py": "3518b8211cba808413de2ec9466fd2a9eb9eecf853a236e028c68ba125f5f9b3"
+    "tools/result_summary.py": "7924f10f63f644d57bf719fec36b50a64841e9497ed1f0d9c9c3bd4a3f87f1cf"
   },
   "new_research_experiments": false,
-  "historical_results_rerun": false
+  "historical_results_rerun": false,
+  "interface_updates": [
+    {
+      "date": "2026-10-25",
+      "file": "tools/result_summary.py",
+      "previous_sha256": "3518b8211cba808413de2ec9466fd2a9eb9eecf853a236e028c68ba125f5f9b3",
+      "sha256": "7924f10f63f644d57bf719fec36b50a64841e9497ed1f0d9c9c3bd4a3f87f1cf",
+      "change": "Use 10000 bootstrap draws by default and identify separate SASRec/SSD4Rec matching comparison families."
+    }
+  ]
 }
