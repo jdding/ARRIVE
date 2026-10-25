@@ -36,7 +36,7 @@ def recover_sources(ids,features,complete=None):
 
 
 def replay_row(ids,features,rrf_indices,truth,complete=None):
-    from run_arrive_attribution_controls import rrf_pool
+    from candidate_fusion import rrf_pool
     truth=np.asarray(truth);rrf_indices=np.asarray(rrf_indices)
     if (truth.ndim!=1 or not len(truth) or not np.issubdtype(truth.dtype,np.integer)
         # The existing evaluator preserves unseen target identities as negative

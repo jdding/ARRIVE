@@ -12,11 +12,11 @@ sys.path.insert(0, str(REPO / "tools"))
 
 import numpy as np
 from scipy import sparse
-from arrive_cue_donors import availability_codes, controlled_mapping
-from arrive_framework_datasets import feature_schema
+from cue_donors import availability_codes, controlled_mapping
+from feature_schema import feature_schema
 from export_io import (CATALOG_FILES, EXPORT_FILES, SOURCE_ORDER, checked_file, digest,
                        load_cue_treatment, load_export, load_sources, npz_dict, read_json, write_json)
-from run_music4all_candidate_support_a1 import user_partition
+from data_splits import user_partition
 
 
 def convert(source, output, catalog=None, prepared=None):

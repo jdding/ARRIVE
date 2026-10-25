@@ -11,22 +11,23 @@ from types import SimpleNamespace
 
 sys.dont_write_bytecode = True
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / 'tools'))
+sys.path.insert(0, str(Path(__file__).resolve().parents[1] / 'tests'))
 
 import numpy as np
 from scipy import sparse
-from arrive_framework_datasets import feature_schema
-from arrive_cue_donors import (availability_codes, controlled_mapping, CueTreatment,
+from feature_schema import feature_schema
+from cue_donors import (availability_codes, controlled_mapping, CueTreatment,
                                verify_unchanged_rows)
-from run_arrive_attribution_controls import rrf_pool
-from run_arrive_full_rcce_control import row_feature, static_feature_rows
-from run_arrive_recent_ranker import (LOSS, apply_cue_match, fit_pool, request_relations,
+from candidate_fusion import rrf_pool
+from candidate_features import row_feature, static_feature_rows
+from ranking import (LOSS, apply_cue_match, fit_pool, request_relations,
                                      selected_rows, top10, with_request_context)
-from run_music4all_artist_component_b import artist_members
-from run_music4all_candidate_support_a0 import (merge_candidates, ranked_history,
+from catalog_metadata import artist_members
+from candidate_sources import (merge_candidates, ranked_history,
                                                ranked_sparse_row, recent_anchors)
-from run_music4all_candidate_support_a1 import stable_topk, user_partition
-from run_music4all_component_c2_conversion_oof import row_metrics, user_macro
-import test_arrive_cue_donors as native_tests
+from data_splits import stable_topk, user_partition
+from metrics import row_metrics, user_macro
+import test_cue_donors as native_tests
 
 
 def sample():

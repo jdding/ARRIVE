@@ -12,7 +12,7 @@ from pathlib import Path
 
 import numpy as np
 
-from arrive_framework_datasets import feature_schema
+from feature_schema import feature_schema
 
 
 EXPORT_FILES = ("features.npy", "candidate_ids.npy", "labels.npy", "metadata.npz", "REQUEST_CONTEXT.npz")
@@ -205,9 +205,9 @@ def load_cue_treatment(export, catalog_root):
     producer is omitted; supplied cues are checked against all matching fields.
     """
     from scipy import sparse
-    from arrive_cue_donors import (CueTreatment, availability_codes, controlled_mapping,
+    from cue_donors import (CueTreatment, availability_codes, controlled_mapping,
                                     cue_match_values, verify_unchanged_rows)
-    from run_music4all_candidate_support_a1 import user_partition
+    from data_splits import user_partition
 
     if catalog_root is None:
         raise ValueError("wrong_mode_requires_catalog_and_precomputed_CUE_DONORS")

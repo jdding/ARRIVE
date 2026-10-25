@@ -10,8 +10,8 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "tools"))
 
 import numpy as np
 from export_io import digest, load_export, load_sources, require_fresh_output, write_json
-from replay_arrive_cue_source_v2 import replay_row
-from run_music4all_component_c2_conversion_oof import user_macro
+from source_replay import replay_row
+from metrics import user_macro
 
 
 def main():

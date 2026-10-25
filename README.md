@@ -1,22 +1,16 @@
 # ARRIVE
 
-Code for **ARRIVE: First-Song Conditioning for Post-Hiatus Music Recommendation**.
-ARRIVE combines sequence-model candidates, first-song transitions, historical
-transitions and same-artist songs in a protected RRF200 pool, then ranks that
-pool with 31-feature CatBoost YetiRank.
+Code for **ARRIVE: First-Song Matching for Post-Hiatus Music Recommendation**.
 
-This release contains the main-result source chain: data preparation, SASRec
-and SSD4Rec backbone training, Train-only indexes, candidate/feature export,
-matching controls, evaluation and result analysis. The
-[reproduction guide](reproduction/README.md) gives the stage order, commands
-and recorded settings. Datasets and trained models are not distributed.
-The chain has not been rerun on the real datasets for this release;
-[coverage and limits](docs/coverage.md) separates source coverage from verification.
+ARRIVE combines candidates from a frozen sequence model, first-song transitions,
+history transitions and the first song's artist. It protects the backbone's
+top ten within a 200-song pool, then ranks candidates with 31-feature CatBoost
+YetiRank. Both SASRec and SSD4Rec source pipelines are included.
 
-## Start here
+## Quick check
 
-Use Python 3.12 and a CPU. No music data, GPU or network access is needed after
-installing dependencies:
+Use Python 3.12. After installing dependencies, this check needs no music data,
+network connection or GPU:
 
 ```sh
 python3.12 -m venv .venv
@@ -24,64 +18,63 @@ python3.12 -m venv .venv
 .venv/bin/python scripts/smoke.py
 ```
 
-The smoke builds six synthetic requests and checks retrieval, RRF200, features,
-the three matching treatments, metrics and five-tree CatBoost fit/save/reload.
-It should finish in under a minute and end with `"status": "pass"` and
-`"catboost": {"status": "pass", ...}`. Temporary models are removed. The printed
+It builds six synthetic requests, checks retrieval, protected RRF200, features,
+the three matching treatments and metrics, and fits/saves/reloads a five-tree
+CatBoost model. It normally finishes within a minute and prints `"status": "pass"`
+with a passing `catboost` check. Temporary models are removed. The printed
 values are test outputs, not paper results.
 
-For a NumPy/SciPy-only check, use `python scripts/smoke.py --core-only`.
-This explicitly reports CatBoost as `NOT_RUN`; it is not a model-training check.
-See the [quickstart](ARTIFACT_QUICKSTART.md) for the test suite and export commands.
+To run the tests:
 
-## Read the method and protocol
+```sh
+.venv/bin/python -m pip install -r requirements/test.txt
+.venv/bin/python -m pytest -q tests
+```
 
-| File | Contents |
+`scripts/smoke.py --core-only` runs the NumPy/SciPy checks and explicitly skips
+CatBoost. Native training/export checks additionally need
+`requirements/native.txt`; the SSD4Rec CUDA/Mamba environment is described in
+the reproduction guide.
+
+## Reproduce the paper
+
+Follow [reproduction/README.md](reproduction/README.md) for data acquisition,
+preparation, backbone training, Train-only indexes, candidate exports, matching
+controls and saved-result analysis. It contains the stage order, commands and
+recorded settings. Obtain the public datasets under their providers' terms;
+datasets, paper checkpoints and original per-user predictions are not bundled.
+
+| Paper result | Code and protocol |
 |---|---|
-| [docs/protocol.md](docs/protocol.md) | Task, fixed candidate pools, controls, fitting/calibration, metrics and uncertainty |
-| [docs/features.md](docs/features.md) | All 31 columns, transformations, missing content and Yambda substitutions |
-| [docs/exports.md](docs/exports.md) | Prepared-input schema and executable export-level commands |
-| [docs/baselines.md](docs/baselines.md) | Baseline adaptations and recorded configuration scope |
-| [docs/data_acquisition.md](docs/data_acquisition.md) | Dataset-provider links and preparation boundaries |
-| [reproduction/README.md](reproduction/README.md) | Main-result pipeline, both backbones, input preparation and analysis |
-| [docs/coverage.md](docs/coverage.md) | What can be checked here and what is not distributed |
-| [configs/protocol.json](configs/protocol.json) | Machine-readable method settings |
-| [configs/feature_schema.json](configs/feature_schema.json) | Exact feature order |
+| Table 1: complete-system results | Both backbone pipelines and comparison adapters; each ARRIVE/backbone pair shares its actual checkpoint |
+| Table 2: matching controls | Correct/removed/mismatched fields with candidates and the other 27 inputs fixed; SASRec reuses Table 1 models, while SSD4Rec uses its separately trained follow-up models |
+| Table 3: candidate coverage | SASRec source replay with a fixed 200-song budget and protected backbone top ten |
+| Figure 2 and user analysis | Seed-averaged user gains, harm/zero/improvement, strata and ECDF coordinates |
 
-The matching controls change only columns `12, 13, 14, 16`; the other 27 inputs
-and the candidate pool remain fixed. Correct, removed and mismatched arms use
-the same fitting and calibration procedure. The wrong-song arm needs a
-label-free donor bundle and catalog metadata; it cannot be reconstructed from
-the four matching values alone.
+Analysis uses 10,000 user bootstrap draws. The four original SASRec matching
+contrasts and four SSD4Rec follow-up contrasts are adjusted as separate families.
+See [docs/protocol.md](docs/protocol.md) for aggregation and interval definitions.
 
-## Code layout
+The source chain is supplied for inspection and reproduction. It has not been
+rerun on the real datasets for this release. See [docs/coverage.md](docs/coverage.md)
+for execution checks and the remaining historical asset/configuration limits.
 
-- `tools/` contains the native retrieval, feature, donor, ranking and metric
-  functions, plus validated export I/O. Historical module names are retained
-  to keep the native functions and imports intact.
-- `scripts/` contains the synthetic smoke and prepared-export entry points.
-- `reproduction/native/` contains the main-result dependency closure and data
-  producers; `reproduction/configs/` records the 12 backbone runs and 30
-  comparison-baseline configurations.
-- `tests/` checks export contracts and error handling.
-- `docs/native_training_selection.txt` preserves the original fitting and
-  calibration excerpt for comparison with the runnable wrapper.
+## Repository layout
 
-The ranker is trained on the exported candidate union. Calibration and inference
-rank only the RRF200 subset. Saved model manifests record `selected_trees`; do
-not assume that every tree in a saved model was selected for evaluation.
+| Directory | Purpose |
+|---|---|
+| `scripts/` | Commands for smoke checks, prepared exports, fitting, evaluation and analysis |
+| `tools/` | Lightweight retrieval, feature, donor, ranking, metric and export-I/O functions |
+| `reproduction/` | Raw-data preparation and full backbone/export implementation, plus recorded configurations |
+| `configs/` | Task protocol and the ordered 31-feature schema |
+| `requirements/` | Optional test and native-pipeline dependencies |
+| `tests/` | Synthetic algorithm, input-contract and CLI checks |
+| `docs/` | Protocol, features, data sources, adapters and reproduction scope |
 
-## Reproduction boundary
+Useful references: [features](docs/features.md), [export schema](docs/exports.md),
+[baseline adaptations](docs/baselines.md), [data acquisition](docs/data_acquisition.md).
+The ranker fits the exported candidate union; calibration and inference rank
+the RRF200 subset. Evaluation uses the recorded `selected_trees` value.
 
-Synthetic checks test implementation behavior. Running these entry points on
-new exports tests those exports; it does not recreate the frozen paper cohort.
-The paper's complete-system and fixed-pool matching comparisons use SASRec and
-SSD4Rec. Transition-source coverage controls use SASRec. In Table 2, the SASRec
-ARRIVE arm reuses Table 1's models; the SSD4Rec follow-up uses separate backbone
-checkpoints and refitted rankers. No online-business result is supplied here.
-The original baseline search history is incomplete. SSD4Rec needs the pinned
-upstream blocks and a compatible Linux CUDA/Mamba environment. Source inclusion
-does not establish fresh-run metric equality or equal baseline tuning budgets.
-
-Source is provided under the existing [MIT license](LICENSE). Dataset and
-dependency rights remain with their respective providers; see [NOTICE.md](NOTICE.md).
+Code uses the [MIT license](LICENSE). Dataset and dependency rights remain with
+their providers; see [NOTICE.md](NOTICE.md).

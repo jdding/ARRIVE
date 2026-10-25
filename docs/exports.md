@@ -7,7 +7,7 @@ Those upstream producers are included separately; follow the
 [reproduction guide](../reproduction/README.md) before using this interface.
 No frozen paper results are supplied or certified as freshly reproduced.
 
-Install the dependencies in the [quickstart](../ARTIFACT_QUICKSTART.md) first.
+Install the dependencies in the [quick check](../README.md#quick-check) first.
 All commands below run from the repository root. Output directories must not
 already exist. Training uses CPU CatBoost; no GPU is required by these wrappers.
 

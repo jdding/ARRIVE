@@ -3,7 +3,7 @@ from __future__ import annotations
 
 import numpy as np
 from scipy import sparse
-from run_arrive_attribution_controls import FEATURE_NAMES
+from candidate_fusion import FEATURE_NAMES
 
 
 def static_feature_rows(frequency: np.ndarray, artists: np.ndarray, audio: np.ndarray,

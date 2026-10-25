@@ -4,7 +4,7 @@ from pathlib import Path
 import numpy as np
 
 from export_io import digest, npz_dict
-from run_music4all_component_c2_conversion_oof import row_metrics
+from metrics import row_metrics
 
 SEEDS = (2024, 2025, 2026)
 IDENTITY = ("row_ids", "users", "targets", "target_counts", "bucket_ids")

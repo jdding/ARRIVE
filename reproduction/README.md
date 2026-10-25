@@ -15,13 +15,13 @@ source code is not evidence that a fresh run has matched the paper's scores.
 For CPU checks and SASRec source execution, use Python 3.12 and:
 
 ```sh
-python -m pip install -r requirements-reproduction.txt -r requirements-dev.txt
+python -m pip install -r requirements/native.txt -r requirements/test.txt
 python scripts/smoke.py
 python scripts/smoke_reproduction.py
 python -m pytest -q
 ```
 
-`requirements-reproduction.txt` records the CPU import/test environment, not
+`requirements/native.txt` records the CPU import/test environment, not
 the historical GPU environment. The recorded SSD4Rec environment was Python
 3.10.15, PyTorch 2.1.1+cu118, Mamba-SSM 2.2.2, causal-conv1d 1.4.0, RecBole
 1.2.0 and transformers 4.46.3. Use a separate compatible Linux CUDA environment

@@ -11,10 +11,10 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "tools"))
 import numpy as np
 from export_io import (digest, load_cue_treatment, load_export, require_fresh_output,
                        require_same_run, write_json)
-from arrive_framework_datasets import feature_schema
-from run_arrive_recent_ranker import ITERATIONS, LOSS, fit_pool, top10
-from run_music4all_candidate_support_a1 import user_partition
-from run_music4all_component_c2_conversion_oof import row_metrics, user_macro
+from feature_schema import feature_schema
+from ranking import ITERATIONS, LOSS, fit_pool, top10
+from data_splits import user_partition
+from metrics import row_metrics, user_macro
 
 
 def main():

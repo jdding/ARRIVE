@@ -416,41 +416,56 @@
     }
   ],
   "packaging_changes": [
-    "Registry documentation removes a private host reference",
-    "Native exporter additionally saves complete sources and cue identities",
-    "Separate reviewer freeze schema for the portable ranker/export interface",
-    "Fixed candidate recipe input is distinguished from historical experimental gate results",
-    "Recover recorded Onion temporal exclusion and SSD4Rec fold support from existing native20k runtime",
-    "Fold merge drops an inapplicable single-source-bundle fingerprint",
-    "Rename a local lambda parameter without changing its ordering"
+    "The export interface includes ranked source lists and cue identities for matching controls.",
+    "The portable freeze record binds selected models, input hashes and the retrieval contract before Test export.",
+    "Portable core modules expose selected native computations without the full training dependencies."
   ],
   "added_interface_files": {
-    "reproduction/native/reviewer_freeze.py": "df149a06eeb15c11103919bf484f3cf92de0200b03e74612c5f10dec00c9bfd4",
-    "scripts/backbone_predictions.py": "b36dc1962038a42db1411560bb6f53011d08f5d1fc5e656167e83d18b980ff00",
-    "scripts/convert_native_export.py": "447c4b8d9b6198d68b8e076e773e5d7b7196cde26043a6a034b314e4dae84ddf",
-    "scripts/evaluate_ranker.py": "335e31537da453e7ad86040b6ddfe99b78b72401e5a02f70ee8e5d0429437b6b",
+    "tools/candidate_features.py": "562225e40965079d45c670e04c3c3308409bd8f461261745f9407cc658a28a87",
+    "tools/candidate_fusion.py": "0fa9be34ecb872b4b0ee95d5a448fa8c8a83cc55c764980553cc4e492090ca07",
+    "tools/candidate_sources.py": "030b5c4b34e0f38172517eb0efc53340698040a6f3e3866410457a0c98902bda",
+    "tools/catalog_metadata.py": "12a335d3c2533e211bd8decebe9d7a5c5feabcf01d140ca5775ee2897854c6b5",
+    "tools/cue_donors.py": "ce0ed2256ebbf6673a91b0f9ebd337082fed699f4ca8712e969434a9c1e2e349",
+    "tools/data_splits.py": "6f28a93000686749ec6e7437b9bec315f9fdb1c3b85152709345855f366dfca5",
+    "tools/export_io.py": "09a960a97ec87d70043e6b7879fc875e5bb45b0fe00f62e6e6582bf40dbcb278",
+    "tools/feature_schema.py": "011758adebffc71eefd56b38e1b2e5a21b457ba5c823a9e2324e5303ce81874a",
+    "tools/metrics.py": "3fbf3c1c349b75b2f94b3283a0e53af4edb85933379be3c37e8f49aff5226a75",
+    "tools/ranking.py": "71d779e272298858b71c355ab5e6c7d1cda561bc6124cbb07953fc5655917a2f",
+    "tools/result_summary.py": "635938c43f57cc951e75da6422609cfa4b804df299f31317164eff87caccc987",
+    "tools/source_replay.py": "ab53e9c50c8f8e3e5e358098d9fdd6e52f69b19c5aecc6693054250ef6502c99",
+    "scripts/backbone_predictions.py": "1de53b8da1c20e739a2b3798e951a71687825da7f76b7a6e62023e0d02d5d5d4",
+    "scripts/convert_native_export.py": "88d74299b4f11bc540c024ddc7da624d681b2dc98b77f0e385e7d05ecf81ef04",
+    "scripts/evaluate_ranker.py": "ecf52a3df75922c704d0ac95e3ef6d0ed61c605d0d5210de71791c3a2c55fff2",
     "scripts/fetch_ssd4rec_source.py": "d04f771862f78be1814c965dceaebfe08ad3ee89fd4808e71796759bac65e23b",
     "scripts/native.py": "04122981c2ada61d4c77800704708d2c32b4defe684124c61c7772db53edeb0b",
     "scripts/prepare_artist_mapping.py": "c6293a9d4be9ad4051502a1544ffc0a96585e998f0abf415fa3c8facdd0c05b5",
     "scripts/prepare_catalog.py": "131a94882aee28bf1ef0b9bef2df04c750ab6dd6d382f7cfbcd25f5900fa274c",
     "scripts/prepare_onion_content.py": "7fa64096cdcca623590f58ba446fc7f1f63192071ccf3ef730c88f039c310c20",
-    "scripts/replay_coverage.py": "719f841b08c73977dc4f34b8ece316780a3727329d926cd98bf4664fa7309da4",
-    "scripts/smoke.py": "4114e51e491e76a508182bf82d8e26f10a749c353c034f67cacf4e18dc22cd62",
+    "scripts/replay_coverage.py": "b415eb76a9059e65557c2bbad724ab6a5a2d808cce44498da205b813f20f0512",
+    "scripts/smoke.py": "4faf2032c3050c35f62f8ccabc081d1cf320428c17dc8cc9a148f551180a2870",
     "scripts/smoke_reproduction.py": "cb1b11a0f9024d50587ef62f9fb5948afca2a99bb89fbe89ee8abfc6f7e2e956",
     "scripts/summarize_results.py": "a14eb98e906c6e8ce0206817a93835dfb19cc560a3b0847286b53996868e8033",
     "scripts/train_backbone.py": "84a6a6326a75af60d23ef81cfd68fe98a6e251b82baad503f4ea1e0af77226f5",
-    "scripts/train_ranker.py": "72ec4114aedebdc2b96bef18e7831afafb4baa785eaa0d4d78410f0dbc595dd4",
-    "tools/result_summary.py": "7924f10f63f644d57bf719fec36b50a64841e9497ed1f0d9c9c3bd4a3f87f1cf"
+    "scripts/train_ranker.py": "b73a6cae2f7f4a30b4b4f6a44da32721a4dc53b7eadf36edad23b4f1bd582136",
+    "tests/test_cli_smoke.py": "cc5a45dee63bc7179dc4d11cbf3dd67ae99eb88a5a3dde921e570546a374b5cc",
+    "tests/test_cue_donors.py": "7098eff847ff8e5ccaeeb618ce885979b57300faad1ff01c66dd6dbaf3851663",
+    "tests/test_export_io.py": "bccd8e060578af3a3d5c7598031302ddff657b3a5ea7de86940bf20a2208da8e",
+    "tests/test_native_protocol.py": "ce971f5257c52665d035d095f1bb8d4cbf170f64fc5f8a9bd515333b4ae5295f",
+    "tests/test_reproduction.py": "365545876d52ee6b459348b1fd600675fde3a3ec44de574dd0d783f917738ec7"
   },
   "new_research_experiments": false,
   "historical_results_rerun": false,
-  "interface_updates": [
-    {
-      "date": "2026-10-25",
-      "file": "tools/result_summary.py",
-      "previous_sha256": "3518b8211cba808413de2ec9466fd2a9eb9eecf853a236e028c68ba125f5f9b3",
-      "sha256": "7924f10f63f644d57bf719fec36b50a64841e9497ed1f0d9c9c3bd4a3f87f1cf",
-      "change": "Use 10000 bootstrap draws by default and identify separate SASRec/SSD4Rec matching comparison families."
-    }
-  ]
+  "portable_module_sources": {
+    "tools/cue_donors.py": "tools/arrive_cue_donors.py",
+    "tools/feature_schema.py": "tools/arrive_framework_datasets.py",
+    "tools/source_replay.py": "tools/replay_arrive_cue_source_v2.py",
+    "tools/candidate_fusion.py": "tools/run_arrive_attribution_controls.py",
+    "tools/candidate_features.py": "tools/run_arrive_full_rcce_control.py",
+    "tools/ranking.py": "tools/run_arrive_recent_ranker.py",
+    "tools/catalog_metadata.py": "tools/run_music4all_artist_component_b.py",
+    "tools/candidate_sources.py": "tools/run_music4all_candidate_support_a0.py",
+    "tools/data_splits.py": "tools/run_music4all_candidate_support_a1.py",
+    "tools/metrics.py": "tools/run_music4all_component_c2_conversion_oof.py",
+    "tests/test_cue_donors.py": "tools/test_arrive_cue_donors.py"
+  }
 }

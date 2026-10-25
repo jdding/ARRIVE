@@ -9,7 +9,7 @@ sys.dont_write_bytecode = True
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "tools"))
 import numpy as np
 from export_io import digest, load_export, load_sources, require_fresh_output, write_json
-from run_music4all_component_c2_conversion_oof import row_metrics, user_macro
+from metrics import row_metrics, user_macro
 
 
 def main():

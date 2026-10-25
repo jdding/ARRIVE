@@ -19,11 +19,11 @@ for the native pipeline.
 | Table 3 | Native equal-budget full-source replay and three-seed Recall/Hit Rate analysis | Synthetic RRF parity and reporting tests; real-data replay not repeated |
 | Figure 2 / user analysis | Paired user gains, harm/zero/improvement, strata and unsmoothed ECDF coordinates | Synthetic user-macro/seed-averaging tests; no original predictions distributed |
 
-`tools/` retains the small tested native projection for the portable interface.
-`reproduction/native/` contains the wider dependency closure used by the native
-producers. Older research branches remain where imports require them; they are
-not extra short-paper methods. The new portable freeze schema is distinct from
-the historical freeze records and does not rewrite them.
+`tools/` provides the selected retrieval, feature and metric functions needed
+by the lightweight export interface. `reproduction/native/` supplies the full
+data preparation, training and export implementation. Its original module names
+and bytes are retained for source and model-input bindings. The portable freeze
+schema is distinct from the historical freeze records.
 
 Remaining limits:
 

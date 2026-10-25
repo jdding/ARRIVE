@@ -1,8 +1,12 @@
 """Selected native ARRIVE primitives; see coverage.md for scope."""
 from __future__ import annotations
 
+import sys
+from pathlib import Path
+sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "tools"))
+
 import numpy as np
-import arrive_cue_donors as m
+import cue_donors as m
 
 
 def test_same_bin_and_partition_isolation():
@@ -31,7 +35,7 @@ def test_insufficient_group_retained_and_flagged():
 
 def test_four_matching_fields_exact_against_existing_producer():
     from scipy import sparse
-    from run_arrive_full_rcce_control import row_feature
+    from candidate_features import row_feature
     rng=np.random.default_rng(7);n=12
     audio=rng.normal(size=(n,4)).astype(np.float32)
     genre=sparse.csr_matrix(rng.normal(size=(n,3)).astype(np.float32))

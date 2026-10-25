@@ -4,5 +4,5 @@ from __future__ import annotations
 
 
 def feature_schema():
-    from run_arrive_attribution_controls import FEATURE_NAMES
+    from candidate_fusion import FEATURE_NAMES
     return list(FEATURE_NAMES) + ["recent_unique_fraction", "log_first_track_transition_count", "first_track_transition_concentration"]

@@ -10,13 +10,13 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "tools"))
 
 import numpy as np
 from scipy import sparse
-from arrive_cue_donors import availability_codes, controlled_mapping, cue_match_values
-from arrive_framework_datasets import feature_schema
+from cue_donors import availability_codes, controlled_mapping, cue_match_values
+from feature_schema import feature_schema
 from export_io import (CATALOG_FILES, EXPORT_FILES, SOURCE_ORDER, digest, load_cue_treatment,
                        load_export, load_sources, npz_dict, require_fresh_output, require_same_run)
-from replay_arrive_cue_source_v2 import replay_row
-from run_arrive_attribution_controls import rrf_pool
-from run_music4all_candidate_support_a1 import user_partition
+from source_replay import replay_row
+from candidate_fusion import rrf_pool
+from data_splits import user_partition
 
 
 def save_manifest(root, record):

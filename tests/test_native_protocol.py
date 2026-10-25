@@ -9,7 +9,7 @@ REPO = Path(__file__).resolve().parents[1]
 NATIVE_AVAILABLE = all(importlib.util.find_spec(name) for name in ("torch", "lightgbm", "pyarrow"))
 
 
-@unittest.skipUnless(NATIVE_AVAILABLE, "requires requirements-reproduction.txt")
+@unittest.skipUnless(NATIVE_AVAILABLE, "requires requirements/native.txt")
 class NativeProtocolTests(unittest.TestCase):
     def run_native(self, code):
         result = subprocess.run([sys.executable, "-c", code], cwd=REPO,

@@ -9,11 +9,11 @@ sys.dont_write_bytecode = True
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "tools"))
 
 import numpy as np
-from arrive_framework_datasets import feature_schema
+from feature_schema import feature_schema
 from export_io import (digest, load_cue_treatment, load_export, read_json,
                        require_fresh_output, write_json)
-from run_arrive_recent_ranker import LOSS, top10
-from run_music4all_component_c2_conversion_oof import row_metrics, user_macro
+from ranking import LOSS, top10
+from metrics import row_metrics, user_macro
 
 
 def main():

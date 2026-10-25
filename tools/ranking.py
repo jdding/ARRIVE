@@ -41,7 +41,7 @@ def apply_cue_match(block: np.ndarray, mode: str, treatment=None, ids=None, quer
 def request_relations(data, row_ids, items, audio, genre, tags, artists, x, h, frequency):
     """Request-only fields. Deliberately never read continuation targets."""
     from scipy import sparse
-    from run_music4all_candidate_support_a0 import recent_anchors, ranked_sparse_row, ranked_history
+    from candidate_sources import recent_anchors, ranked_sparse_row, ranked_history
     norm_items = items / np.maximum(np.linalg.norm(items, axis=1, keepdims=True), 1e-8)
     result = np.empty((len(row_ids), 18), np.float32)
     x_cache = {}
@@ -140,7 +140,7 @@ def top10(model: CatBoostRanker, features: np.ndarray, ids: np.ndarray,
           meta: dict, rows: np.ndarray, trees: int,
           context: np.ndarray | None = None, context_mode: str = "base", threads: int = -1,
           batch_rows: int = 256, cue_match_mode: str = "true", cue_treatment=None) -> np.ndarray:
-    from run_music4all_candidate_support_a1 import stable_topk
+    from data_splits import stable_topk
 
     offsets = meta["offsets"]
     source = meta["rrf_indices"]
