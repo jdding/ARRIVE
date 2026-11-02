@@ -200,3 +200,37 @@ analysis on saved predictions; the paper's original predictions are not supplied
 | Table 2 I/J | SSD4Rec identity replacement and joint source/field removal on both datasets | Portable identity mode and native joint-removal export policy are included. Keep the same Table 2 carrier lineage; J refits after regeneration and can change positive-fit counts. Original paper weights/exports remain omitted. |
 | Table 3 | SASRec-backed source replay with and without first-song transitions | The other three sources, 200-song budget, and protected backbone Top-10 stay fixed. The paper's replay needed no padding. Real source exports and coverage results are omitted. |
 | User analyses | Seed-averaged paired per-user gains and within-user/stratum averages | Summary code includes paired intervals, harm/zero/improvement, strata and ECDF coordinates. Original predictions and figure styling are not distributed. |
+
+## Additional result details
+
+Differences use unrounded three-seed user-macro means. The paired bootstrap resamples users after matched-seed averaging, with fitted models held fixed. Wrong-song donors are selected separately in fitting, calibration and evaluation partitions, preserving metadata availability and using the training-popularity bin where possible; no continuation labels enter donor selection.
+
+The table below gives ARRIVE minus w/o matching in percentage points. Replay and other-song contributions retain the original ranks and the full-target metric denominator.
+
+| Dataset | Backbone | Overall NDCG increment | Other-song Recall increment | Other-song NDCG increment |
+|---|---|---:|---:|---:|
+| Onion | SASRec | 0.563346 | 0.145205 | -0.018713 |
+| Onion | SSD4Rec | 0.231916 | 0.132451 | 0.084442 |
+| Yambda | SASRec | 1.210682 | 0.094328 | -0.288241 |
+| Yambda | SSD4Rec | 1.145671 | 0.277168 | 0.003601 |
+
+For Yambda/SASRec, the other-song NDCG change has a 95% interval of [-0.40, -0.18] points. Its gained/lost-hit net is +0.04 points and shared-hit rank term is -0.33 points, while the overall matching gain remains +1.21 points.
+
+Correct matching exceeds the wrong-song control by 0.56 and 1.19 NDCG points on Onion and Yambda with SASRec, and by 0.25 and 1.18 with SSD4Rec. The four mismatch-minus-removal 95% intervals include zero; this is not an equivalence test.
+
+For source coverage, Onion's Recall@200 increment is 0.09 points with 95% interval [-0.03, 0.22]. At the fixed budget, adding the return-song transition source adds 111 and displaces 100 covered target occurrences per seed on average. For known-return-song requests without later replay, Onion's Hit Rate increment is 0.26 points ([0.04, 0.48]); its Recall interval includes zero. Yambda's full-cohort and no-replay gains are reported in the manuscript.
+
+The user-level analysis uses ARRIVE versus its actual Table 1 backbone, not the separate Table 2 SSD4Rec checkpoints. On Onion, 79.5% of users losing NDCG have unchanged or higher Recall with either backbone. Their loss shares are 7.1%/7.6% among users with any unusable return-song request and 14.4%/16.2% among users with all requests usable (SASRec/SSD4Rec).
+
+### Metadata groups and mean gains
+
+A request has usable metadata when its actual return-song ID is in the catalog and at least one matching-metadata channel is available. A user is in the all-usable group if every observed request is usable; this does not require all metadata modalities. The other group has at least one unusable request. Means below are full ARRIVE minus the actual paired Table 1 backbone, in NDCG percentage points, using the paper's user-macro and three-seed aggregation.
+
+| Dataset | Backbone | All-usable users | Mean gain | Users with any unusable request | Mean gain |
+|---|---|---:|---:|---:|---:|
+| Onion | SASRec | 4,495 | 7.5377 | 1,236 | 2.5007 |
+| Onion | SSD4Rec | 4,495 | 6.6827 | 1,236 | 2.0207 |
+| Yambda | SASRec | 6,508 | 13.6526 | 1,606 | 2.3102 |
+| Yambda | SSD4Rec | 6,508 | 9.1329 | 1,606 | 2.1172 |
+
+These are observed user-group means; the analysis does not estimate a causal effect of metadata availability or test the between-group difference. The original aggregate report has SHA-256 `df23bd53c4932324c5e2b9b2d607a284d401358baf8461ca77d8e442f51f047a`. Its 24 source prediction hashes match the Table 1 full-system/backbone inputs.
