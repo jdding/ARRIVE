@@ -18,6 +18,23 @@ from result_summary import contrast, load_predictions, summarize, user_values
 
 
 class ReproductionBridgeTests(unittest.TestCase):
+    def test_native_joint_conversion_preserves_policy_and_actual_cues(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            source = make_export(root / "native", source_policy="joint-removal")
+            manifest = read_json(source / "EXPORT_MANIFEST.json")
+            manifest.update(schema="arrive.framework.export.v1", status="pass", test_accessed=False,
+                output_sha256={name: manifest["sha256"][name] for name in (
+                    "features.npy", "candidate_ids.npy", "labels.npy", "metadata.npz", "REQUEST_CONTEXT.npz")},
+                code_sha256={"arrive_framework_datasets.py": digest(REPO / "reproduction/native/arrive_framework_datasets.py")},
+                reproduction_sources_sha256=digest(source / "sources.npz"))
+            (source / "EXPORT_MANIFEST.json").write_text(json.dumps(manifest))
+            output = root / "converted"
+            report = convert(source, output)
+            self.assertEqual(report["source_policy"], "joint-removal")
+            self.assertEqual(load_export(output).manifest["source_policy"], "joint-removal")
+            self.assertEqual(digest(source / "sources.npz"), digest(output / "sources.npz"))
+
     def test_native_conversion_preserves_arrays_and_rebuilds_wrong_control(self):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
@@ -39,6 +56,7 @@ class ReproductionBridgeTests(unittest.TestCase):
             output = root / "converted"
             report = convert(source, output, catalog)
             self.assertIs(report["wrong_cue_bundle"], True)
+            self.assertEqual(read_json(output / "EXPORT_MANIFEST.json")["source_policy"], "full")
             for name in manifest["output_sha256"]:
                 self.assertEqual(digest(source / name), digest(output / name))
             load_cue_treatment(load_export(output), catalog)
@@ -56,6 +74,17 @@ class ReproductionBridgeTests(unittest.TestCase):
                 code_sha256={"arrive_framework_datasets.py": "0" * 64})
             (source / "EXPORT_MANIFEST.json").write_text(json.dumps(manifest))
             with self.assertRaisesRegex(ValueError, "source_version"):
+                convert(source, root / "output")
+            self.assertFalse((root / "output").exists())
+
+    def test_unknown_native_source_policy_is_rejected_before_copying(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            source = make_export(root / "native")
+            manifest = read_json(source / "EXPORT_MANIFEST.json")
+            manifest["source_policy"] = "unknown"
+            (source / "EXPORT_MANIFEST.json").write_text(json.dumps(manifest))
+            with self.assertRaisesRegex(ValueError, "source_policy"):
                 convert(source, root / "output")
             self.assertFalse((root / "output").exists())
 

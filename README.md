@@ -1,6 +1,6 @@
 # ARRIVE
 
-Code for **ARRIVE: First-Song Matching for Post-Hiatus Music Recommendation**.
+Code for **ARRIVE: Return-Song-Guided Music Recommendation after Listening Hiatuses**.
 
 ARRIVE combines candidates from a frozen sequence model, first-song transitions,
 history transitions and the first song's artist. It protects the backbone's
@@ -47,13 +47,16 @@ datasets, paper checkpoints and original per-user predictions are not bundled.
 | Paper result | Code and protocol |
 |---|---|
 | Table 1: complete-system results | Both backbone pipelines and comparison adapters; each ARRIVE/backbone pair shares its actual checkpoint |
-| Table 2: matching controls | Correct/removed/mismatched fields with candidates and the other 27 inputs fixed; SASRec reuses Table 1 models, while SSD4Rec uses its separately trained follow-up models |
+| Table 2: matching controls | Correct/removed/mismatched fields with candidates and the other 27 inputs fixed; SASRec reuses Table 1 models, while SSD4Rec uses separate checkpoints |
+| Table 2: identity and joint controls | SSD4Rec identity-only ranking on the full pool; joint removal rebuilds pools without explicit return-song sources and fields, using the same fitting and selection rules |
 | Table 3: candidate coverage | SASRec source replay with a fixed 200-song budget and protected backbone top ten |
 | Figure 2 and user analysis | Seed-averaged user gains, harm/zero/improvement, strata and ECDF coordinates |
 
 Analysis uses 10,000 user bootstrap draws. The four original SASRec matching
 contrasts and four SSD4Rec follow-up contrasts are adjusted as separate families.
-See [docs/protocol.md](docs/protocol.md) for aggregation and interval definitions.
+See [docs/protocol.md](docs/protocol.md) for aggregation and interval definitions,
+and [metric decomposition](docs/metric_decomposition.md) for replay/other-song
+contributions and gained/lost/shared-hit accounting.
 
 The source chain is supplied for inspection and reproduction. It has not been
 rerun on the real datasets for this release. See [docs/coverage.md](docs/coverage.md)

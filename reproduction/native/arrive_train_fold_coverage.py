@@ -100,6 +100,7 @@ def run_fold(args):
            for v in ("--"+k.replace("_","-"), str(cfg[k]))]],
         [sys.executable, str(tools/"run_arrive_full_rcce_control.py"), "framework_export",
          "--project", str(args.project), "--dataset", args.dataset, "--seed", str(args.seed),
+         "--source-policy", getattr(args, "source_policy", "full"),
          "--surface", "train_cv", "--index-dir", str(root/"index"),
          "--base-checkpoint", str(root/"base/final_model.pt"),
          "--base-manifest", str(root/"base/training_manifest.json"),
@@ -210,8 +211,9 @@ class FoldArray:
         return result
 
 
-def fold_exports(project, dataset, seed, fold_root, folds, assignment_seed, source_code=None):
-    from arrive_framework_datasets import bundle, check_export, hashes, file_hash as digest
+def fold_exports(project, dataset, seed, fold_root, folds, assignment_seed, source_code=None,
+                 expected_policy=None):
+    from arrive_framework_datasets import bundle, check_export, hashes, source_policy, file_hash as digest
     data_dir = Path(bundle(project,dataset)["data_dir"])
     actual_prepared=hashes({n:data_dir/n for n in ("events.npy","sessions.npy","train_frequencies.npy","track_identity.tsv","metric_labels.npz","PREP_STATS.json")})
     rows, users, assignment = fold_of_rows(data_dir,folds,assignment_seed)
@@ -220,6 +222,11 @@ def fold_exports(project, dataset, seed, fold_root, folds, assignment_seed, sour
         root=fold_root/f"fold{k}"
         part=check_export(root/"export",dataset,seed,"train_cv",expected_code=source_code)
         meta, em=part[3],part[4]
+        policy = source_policy(em)
+        if expected_policy is None:
+            expected_policy = policy
+        elif policy != expected_policy:
+            raise ValueError("fold_source_policy_mismatch")
         if not (np.array_equal(meta["row_ids"],rows[assignment==k]) and np.array_equal(meta["users"],users[assignment==k])):
             raise ValueError("fold_export_coverage_identity")
         base_path=root/"base/training_manifest.json"; index_path=root/"index/index_manifest.json"
@@ -250,7 +257,7 @@ def fold_exports(project, dataset, seed, fold_root, folds, assignment_seed, sour
 
 
 def merge_folds(args):
-    from arrive_framework_datasets import EXPORT_FILES, code_bindings, feature_schema
+    from arrive_framework_datasets import EXPORT_FILES, code_bindings, feature_schema, source_policy
     from run_music4all_candidate_support_a1 import atomic_json, atomic_npz, digest
     if args.output.exists():
         raise FileExistsError(args.output)
@@ -260,7 +267,8 @@ def merge_folds(args):
     if source_path and not sharded:
         raise ValueError("historical_source_bindings_require_sharded_storage")
     rows,users,assignment,parts,bindings,full_hash=fold_exports(
-        args.project,args.dataset,args.seed,args.fold_root,args.folds,args.assignment_seed,source_code)
+        args.project,args.dataset,args.seed,args.fold_root,args.folds,args.assignment_seed,source_code,
+        source_policy(vars(args)))
     positions={int(r):(k,j) for k,p in enumerate(parts) for j,r in enumerate(p[3]["row_ids"])}
     widths=np.asarray([parts[k][3]["offsets"][j+1]-parts[k][3]["offsets"][j]
                        for k,j in (positions[int(r)] for r in rows)])
@@ -271,6 +279,30 @@ def merge_folds(args):
           "target_counts":np.zeros(len(rows),np.int64),"bucket_ids":np.zeros(len(rows),np.int64),
           "rrf_indices":np.empty((len(rows),200),np.int64)}
     context=np.empty((len(rows),18),np.float32)
+    source_parts = []
+    if not sharded:
+        for k, part in enumerate(parts):
+            path = args.fold_root / f"fold{k}/export/sources.npz"
+            expected = part[4].get("reproduction_sources_sha256")
+            if expected is None:
+                source_parts.append(None)
+                continue
+            if digest(path) != expected:
+                raise ValueError("fold_complete_sources_hash")
+            with np.load(path, allow_pickle=False) as z:
+                values = {key: z[key] for key in z.files}
+            n = len(part[3]["row_ids"])
+            if (not np.array_equal(values["row_ids"], part[3]["row_ids"])
+                    or not np.array_equal(values["users"], part[3]["users"])
+                    or values["source_ids"].shape != (n, 4, 200)
+                    or values["source_lengths"].shape != (n, 4) or values["cues"].shape != (n,)):
+                raise ValueError("fold_complete_sources_alignment")
+            source_parts.append(values)
+        if any(p is not None for p in source_parts) and any(p is None for p in source_parts):
+            raise ValueError("fold_complete_sources_inventory")
+    complete_sources = (dict(source_ids=np.empty((len(rows),4,200),np.int32),
+        source_lengths=np.empty((len(rows),4),np.int32), cues=np.empty(len(rows),np.int64))
+        if source_parts and source_parts[0] is not None else None)
     args.output.mkdir(parents=True)
     outputs=[np.lib.format.open_memmap(args.output/name,mode="w+",dtype=parts[0][i].dtype,
                 shape=(int(offsets[-1]),*parts[0][i].shape[1:]))
@@ -281,20 +313,26 @@ def merge_folds(args):
         for key in ("target_counts","bucket_ids","rrf_indices"): meta[key][at]=p[3][key][j]
         n=int(meta["target_counts"][at]); meta["targets"][at,:n]=p[3]["targets"][j,:n]
         context[at]=p[5][j]
+        if complete_sources is not None:
+            for key, out in complete_sources.items():
+                out[at] = source_parts[k][key][j]
     for out in outputs: out.flush()
     atomic_npz(args.output/"metadata.npz",**meta)
     atomic_npz(args.output/"REQUEST_CONTEXT.npz",row_ids=rows,users=users,relation=context)
     files = EXPORT_FILES[3:] if sharded else EXPORT_FILES
-    m=dict(parts[0][4]); m.update(rows=len(rows),output_sha256={n:digest(args.output/n) for n in files})
+    m=dict(parts[0][4]); m.update(rows=len(rows),source_policy=source_policy(vars(args)),
+        output_sha256={n:digest(args.output/n) for n in files})
     if sharded:
         m.update(storage="fold_shards_v1", code_sha256=code_bindings(), source_code_sha256=source_code)
     for key in ("serving_inputs","base_manifest","index_dir","index_manifest_sha256"): m.pop(key,None)
-    # The physical merge contains no single serving source bundle. Complete
-    # source lists remain hash-bound in each fold's export; Test is separate.
     m.pop("reproduction_sources_sha256", None)
+    if complete_sources is not None:
+        atomic_npz(args.output/"sources.npz",row_ids=rows,users=users,**complete_sources)
+        m["reproduction_sources_sha256"] = digest(args.output/"sources.npz")
     atomic_json(args.output/"EXPORT_MANIFEST.json",m)
     atomic_json(args.output/"COVERAGE.json",{
         "schema":"arrive.full_train_oof.v1","status":"pass","dataset":args.dataset,"seed":args.seed,
+        "source_policy":source_policy(vars(args)),
         "folds":args.folds,"assignment_seed":args.assignment_seed,"fold_root":str(args.fold_root.resolve()),
         "rows":len(rows),"users":len(np.unique(users)),"full_base_manifest_sha256":full_hash,
         "fold_bindings":bindings,"export_sha256":digest(args.output/"EXPORT_MANIFEST.json"),
@@ -303,7 +341,7 @@ def merge_folds(args):
 
 
 def validate_coverage(root,project,dataset,seed,*,compatibility=None):
-    from arrive_framework_datasets import check_export,code_bindings,file_hash as digest
+    from arrive_framework_datasets import check_export,code_bindings,source_policy,file_hash as digest
     receipt=json.loads((root/"COVERAGE.json").read_text())
     reader_code = (checked_source_code(compatibility["reader_code_sha256"],compatibility)
                    if compatibility is not None else code_bindings())
@@ -312,16 +350,19 @@ def validate_coverage(root,project,dataset,seed,*,compatibility=None):
     if any(receipt.get(k)!=v for k,v in expected.items()): raise ValueError("coverage_receipt_binding")
     sharded = receipt.get("storage") == "fold_shards_v1"
     source_code = checked_source_code(receipt["source_code_sha256"],compatibility) if sharded else None
-    rows,users,_,parts,bindings,full=fold_exports(project,dataset,seed,Path(receipt["fold_root"]),receipt["folds"],receipt["assignment_seed"],source_code)
+    rows,users,_,parts,bindings,full=fold_exports(project,dataset,seed,Path(receipt["fold_root"]),receipt["folds"],receipt["assignment_seed"],source_code,
+        source_policy(receipt))
     if sharded:
         from arrive_framework_datasets import feature_schema
         manifest = json.loads((root/"EXPORT_MANIFEST.json").read_text())
         identity = dict(parts[0][4])
-        for key in ("serving_inputs","base_manifest","index_dir","index_manifest_sha256"):
+        for key in ("serving_inputs","base_manifest","index_dir","index_manifest_sha256","reproduction_sources_sha256"):
             identity.pop(key, None)
         identity.update(rows=len(rows), storage="fold_shards_v1", code_sha256=reader_code,
                         source_code_sha256=source_code,
                         output_sha256={n:digest(root/n) for n in ("metadata.npz","REQUEST_CONTEXT.npz")})
+        if "source_policy" in manifest:
+            identity["source_policy"] = source_policy(receipt)
         if manifest != identity or receipt["feature_schema"] != feature_schema():
             raise ValueError("sharded_export_manifest_binding")
         with np.load(root/"metadata.npz", allow_pickle=False) as z:
@@ -343,6 +384,8 @@ def validate_coverage(root,project,dataset,seed,*,compatibility=None):
         merged = (*arrays,meta,manifest,context)
     else:
         merged=check_export(root,dataset,seed,"train_cv")
+    if source_policy(merged[4]) != source_policy(receipt):
+        raise ValueError("coverage_source_policy_mismatch")
     if (bindings!=receipt["fold_bindings"] or full!=receipt["full_base_manifest_sha256"]
             or not np.array_equal(rows,merged[3]["row_ids"]) or not np.array_equal(users,merged[3]["users"])):
         raise ValueError("full_train_coverage_mismatch")
@@ -373,6 +416,7 @@ def main() -> None:
     parser.add_argument("--fold", type=int)
     parser.add_argument("--assignment-seed", type=int, default=20260927)
     parser.add_argument("--device", choices=("cpu","cuda"), default="cuda")
+    parser.add_argument("--source-policy", choices=("full","joint-removal"), default="full")
     parser.add_argument("--threads", type=int, default=4)
     parser.add_argument("--dataset", choices=("music4all_onion", "yambda500m"), required=True)
     parser.add_argument("--data-dir", type=Path, required=True)

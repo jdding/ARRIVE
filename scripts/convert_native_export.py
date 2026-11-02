@@ -23,6 +23,9 @@ def convert(source, output, catalog=None, prepared=None):
     if output.exists():
         raise FileExistsError(output)
     record = read_json(source / "EXPORT_MANIFEST.json")
+    policy = record.get("source_policy", "full")
+    if policy not in ("full", "joint-removal"):
+        raise ValueError("unknown_source_policy")
     if (record.get("schema") != "arrive.framework.export.v1" or record.get("status") != "pass"
             or record.get("surface") not in ("train_cv", "validation", "test")
             or record.get("feature_schema") != feature_schema()
@@ -48,6 +51,7 @@ def convert(source, output, catalog=None, prepared=None):
         shutil.copyfile(path, output / name)
     manifest = dict(schema="arrive.reviewer_export.v1", dataset=record["dataset"],
         seed=record["seed"], surface=record["surface"], synthetic=record.get("synthetic", False),
+        source_policy=policy,
         feature_schema=feature_schema(), uses_future_labels_for_features=False,
         sha256={name: digest(output / name) for name in EXPORT_FILES},
         native_manifest_sha256=digest(source / "EXPORT_MANIFEST.json"),
@@ -97,6 +101,7 @@ def convert(source, output, catalog=None, prepared=None):
         (output / "EXPORT_MANIFEST.json").write_text(json.dumps(manifest, indent=2) + "\n")
         load_cue_treatment(load_export(output), catalog)
     return dict(status="pass", surface=record["surface"], rows=len(export.rows),
+                source_policy=policy,
                 copied_candidate_arrays_unchanged=True, complete_sources=sources is not None,
                 wrong_cue_bundle=catalog is not None, paper_metric_reproduction=False)
 

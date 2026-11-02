@@ -31,8 +31,16 @@ EXPORT_SCHEMA = "arrive.framework.export.v1"
 PREPARED_SCHEMAS = {"music4all_onion": "genrec.music4all_onion.prepared.v1", "yambda500m": "genrec.yambda500m.prepared.v2"}
 TEST_SCHEMAS = {"music4all_onion": "genrec.music4all_onion.sealed_test.v1", "yambda500m": "genrec.yambda500m.sealed_test.v2"}
 EXPORT_FILES = ("features.npy", "candidate_ids.npy", "labels.npy", "metadata.npz", "REQUEST_CONTEXT.npz")
+SOURCE_POLICIES = ("full", "joint-removal")
 ONION_TEMPORAL_CV_ROWS = 20000
 ONION_TEMPORAL_CV_RULE = "last chronological >=30d Train return per user with a prior Train return; deterministic hash sample"
+
+
+def source_policy(record):
+    policy = record.get("source_policy", "full")
+    if policy not in SOURCE_POLICIES:
+        raise ValueError("unknown_source_policy")
+    return policy
 
 
 def validate_train_cv_exclusion(project, dataset, index, im, data, rows):
@@ -134,6 +142,7 @@ def check_export(root: Path, dataset: str, seed: int, surface: str, *, expected_
     import json
     import numpy as np
     m = json.loads((root / "EXPORT_MANIFEST.json").read_text())
+    source_policy(m)
     expected = {"schema": EXPORT_SCHEMA, "status": "pass", "dataset": dataset,
                 "seed": seed, "surface": surface, "test_accessed": surface == "test",
                 "feature_schema": feature_schema(), "code_sha256": code_bindings() if expected_code is None else expected_code}

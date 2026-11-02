@@ -59,7 +59,7 @@ by the commands below. Do not substitute joint/neural/ILMART branches for the
 | Auxiliary backbone | `run_music4all_candidate_support_a1 train-crossfit-base` | Excludes those held-out rows; epoch matches full-backbone selection |
 | Candidate export | `run_arrive_full_rcce_control framework_export` | Native 28+3 features, fixed RRF200, full four-source lists and actual cues |
 | Portable binding | `convert_native_export.py` | Array bytes unchanged; schema/source hashes checked; optional wrong-cue mapping |
-| Matching controls | `train_ranker.py`, `evaluate_ranker.py` | Three independent fits, Train-internal tree selection, no Test tuning |
+| Return-song controls | `train_ranker.py`, `evaluate_ranker.py` | Independent full/removed/wrong/identity fits; separately rebuilt joint-removal exports; Train-internal tree selection |
 | Coverage | `replay_coverage.py` | Full vs removed first-song source, same budget 200 |
 | Tables/user analysis | `summarize_results.py` | User-macro means, sample SD, paired intervals, harm/zero/improvement and unsmoothed ECDF data |
 
@@ -236,6 +236,26 @@ The exporter now also saves `sources.npz`: the **complete** four lists, their
 lengths, aligned request IDs and actual cues. No source list is reconstructed
 from only those items that survived the exported union.
 
+`--source-policy full` is the default. For the joint-removal control, reuse the
+same frozen backbones, indexes and content, and export a separate directory
+with `--source-policy joint-removal`. It removes the return-song transition and
+artist sources. Its five historical anchors are recent distinct known songs
+from the pre-hiatus history, without excluding a song because it equals the
+actual return song. Training exports retain U200(base/history) union RRF200;
+inference uses RRF200 with protected backbone Top-10. Fusion scores and backbone
+z-scores are recomputed on the new union before zeroing base columns
+3, 5, 12, 13, 14, 16, 19, 21, 24 and 27, plus request-context columns 15 and 16
+(31-field columns 29 and 30). Actual cues remain in the source metadata.
+
+For Yambda, use the same five auxiliary carriers for the two source policies.
+Export each control fold into its own fold layout with the existing
+`framework_export` command; reuse the fold's `base` and `index` directories
+(read-only symlinks suffice) rather than training them again. Pass
+`--source-policy joint-removal` to the physical `arrive_train_fold_coverage merge`
+command. The existing `run-fold` command also accepts the policy when producing
+a new reproduction from scratch. The merger rejects mixed policies. Physical
+merges preserve the complete source lists and actual cues in global row order.
+
 Build a catalog for the wrong-song control with `prepare_catalog.py --data-dir
 PREPARED --audio NORMALIZED_AUDIO --genre NORMALIZED_CATEGORY --output CATALOG`.
 Onion also requires `--tags` and `--information`; Yambda instead requires
@@ -251,16 +271,26 @@ python scripts/convert_native_export.py \
   --catalog data/music4all_onion/reviewer_catalog
 ```
 
-For Yambda's merged Train export, also pass `--prepared-data
-prepared_data/yambda500m_prepared_v2_seconds`: each fold retains its complete
-source bundle, but the merge uses the aligned prepared row IDs to recover cues.
-Validation/Test exports carry their own cues and complete source lists.
+New Yambda physical Train merges carry their own cues and complete source lists,
+as do Validation/Test exports. For an older merged export without that bundle,
+`--prepared-data prepared_data/yambda500m_prepared_v2_seconds` lets conversion
+with `--catalog` recover aligned cues. The converter inherits `source_policy`
+from the native manifest; missing policy in older manifests means `full`.
 
 Repeat for Validation. See [exports.md](../docs/exports.md) for the three
 `train_ranker.py` commands: `true` → `models/arrive`, `none` → `models/removed`,
 `wrong` → `models/mismatched`. The wrong arm needs `--catalog`. The three arms
 share exports, other fields and fitting/calibration policy, but are independently
 refitted. No labels are used by the donor selector.
+
+For the identity control, use the full exports and
+`train_ranker.py --cue-match-mode identity` without a catalog; cue identity is
+read from the hash-bound source metadata. This replaces the four matching fields
+with one exact candidate-equals-return-song indicator. For joint removal, use
+its rebuilt Train and Validation exports with `--cue-match-mode true`; the
+removed fields are already zero. The same positive-candidate fitting rule is
+reapplied to each source union. Training and evaluation reject mixed source
+policies, and identity is only defined for the full policy.
 
 Before generating Test features, call `reviewer_freeze` through `native.py`,
 passing the correct arm's `--model-dir`, `--validation-export`, full-backbone
@@ -270,13 +300,20 @@ passing the correct arm's `--model-dir`, `--validation-export`, full-backbone
 Validation serving inputs, native source hashes, Test manifest and retrieval
 contract without opening Test arrays. The `reviewer_freeze.v1` schema is a new
 input interface, not a replacement for or rewrite of a historical freeze.
+Pass the same `--source-policy` used for that ranker's exports; the freeze binds
+it to the training and Validation manifests.
 
 Generate the native Test export with `framework_export --surface test`, the
 same full backbone/index, `--model-dir`, `--freeze-record`, `--test-data`,
-`--test-manifest`, `--reviewer-export-interface`, and the same retrieval flag.
+`--test-manifest`, `--reviewer-export-interface`, and the same source policy and
+retrieval flag.
 The native sealed-Test artifact and denominator checks remain active. Convert
 this export, with the same catalog, then run the saved A/B/C models using
 `evaluate_ranker.py`. Test data does not choose trees or refit models.
+The identity model reuses the full Test export; the joint-removal model requires
+its separately frozen joint-removal Test export. Query data uses the backbone's
+shared data adapter, with SSD4Rec Test event times read from the sealed Test
+directory rather than the Train/Validation timestamp file.
 
 ## 4. Produce the paper-facing analyses
 
@@ -299,7 +336,10 @@ replay for SASRec.
 
 Prepare an analysis JSON with `rankings` entries containing `dataset`,
 `backbone`, `method`, `seed` and `path` to each saved prediction NPZ. Methods are
-`backbone`, `arrive`, `removed`, `mismatched`, or a named comparison baseline.
+`backbone`, `arrive`, `removed`, `mismatched`, `identity`, `joint-removal`, or
+a named comparison baseline. The last two control names produce their paired
+ARRIVE comparisons. Predictions carrying the actual observed `cues` also
+produce [song-type and shared-hit accounting](../docs/metric_decomposition.md).
 Every row requires all three seeds. If a native baseline prediction omits
 complete targets, add `metadata` pointing to the matching Test-export
 `metadata.npz`; request/user identities are checked, not assumed.
@@ -315,7 +355,9 @@ python scripts/summarize_results.py --config MY_RESULTS.json --output outputs/su
 `summary.json` supplies Table 1/2 ranking means and sample SD. The four
 prespecified SASRec NDCG matching contrasts and the four SSD4Rec follow-up
 contrasts are adjusted as separate families, each using 98.75% intervals.
-Other comparisons and Table 3 coverage use descriptive 95% intervals.
+Identity and joint controls retain the paper's 98.75% interval level; their
+summary records identify these separately from the matching families.
+Other comparisons and Table 3 coverage use 95% intervals.
 Matched-seed per-user differences are averaged before 10,000 user bootstrap
 draws for both backbones. The default settings and example config follow this
 current protocol; historical native analysis scripts retain their original

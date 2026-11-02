@@ -86,17 +86,22 @@ scores are sorted in descending order, with ascending item ID breaking ties.
 
 ## Matching controls
 
-The three arms use identical fitting requests and candidate pools:
+The fixed-pool matching arms use identical fitting requests and candidate pools:
 
 | Arm | Four matching fields | Other 27 fields |
 |---|---|---|
 | ARRIVE / A | Actual first song | Unchanged |
 | Removed / B | Zero | Unchanged |
 | Mismatched / C | Another song's correspondence | Unchanged |
+| Identity / I | Column 12 is `candidate_id == actual_return_song_id`; the other three are zero | Unchanged |
 
 Only zero-based columns `12, 13, 14, 16` are treated. Each mismatched request uses
 one donor for all its candidates, including across processing chunks. The arms
 use the same calibration rule; their selected tree counts may differ.
+Identity uses the observed cue from a hash-bound, request-aligned bundle without
+consulting continuation targets. Known identity remains available even when
+content is missing; the unknown ID 1 cannot match catalog candidates. A versus I
+compares alternative representations, not matching conditional on identity.
 
 Donors use cue identities, content availability, Train-popularity bins, and
 partition membership without continuation labels. Availability is a four-bit
@@ -132,6 +137,32 @@ unresolved donors as `-1`; the control wrapper rejects unresolved usable cues.
 aligned prepared rows for a folded Train merge) and the Train-only catalog.
 It reruns this selector and validates the resulting treatment bundle.
 
+## Joint explicit return-song control
+
+The `joint-removal` source policy removes the return-song transition and artist
+sources, their source ranks, matching fields, cue availability and transition
+support/concentration. H-only anchors retain the recent distinct pre-hiatus
+items without comparing them to the return song. Frozen backbone weights still
+receive the same H-minus/return-song prefix. Retained U200 union RRF200 is
+regenerated, including RRF and score-feature normalization, rather than filtered
+from an incomplete old export. Inference keeps 200 candidates and the exact
+protected backbone Top-10.
+
+Each arm retains the same Train rows/targets, user partition and positive-group
+fitting policy. The effective fitted groups may differ after candidate removal;
+calibration and full Test cohorts stay fixed. The comparison estimates the
+joint pipeline value, including training-support and component interactions.
+It is not an individual-source or serving-only effect. Do not add it to the
+fixed-pool matching increment or interpret it as a percentage of Table 1 gains.
+New exports and models declare `source_policy` explicitly; historical missing
+values mean `full`, and paired training/evaluation must keep the policy matched.
+
+Identity and joint controls were completed for Onion/Yambda with the original
+Table 2 SSD4Rec checkpoints and seeds 2024–2026. Missing original SASRec carrier
+assets do not establish results under that carrier. The source interface can
+be executed with new, fully bound assets, but this is not recovery of the
+historical paper checkpoint lineage.
+
 ## Metrics and uncertainty
 
 Recall@10 divides hits by all distinct targets, including out-of-catalog songs.
@@ -151,6 +182,9 @@ The four prespecified SASRec NDCG matching contrasts (A--B and A--C on two
 datasets) use Bonferroni-adjusted 98.75% intervals. The four SSD4Rec follow-up
 contrasts form a separate family with the same adjustment. This does not assert
 one joint 5% family-wise error bound over all eight contrasts.
+The identity and joint-removal comparisons also retain 98.75% intervals from
+their intended four dataset/carrier contrasts, while the completed reported
+scope is two SSD4Rec settings for each control.
 Mismatch--removal, Recall, subgroups, and
 candidate-coverage intervals are descriptive 95% intervals. Users may enter
 multiple strata; stratified analyses average requests within each user and
@@ -163,5 +197,6 @@ analysis on saved predictions; the paper's original predictions are not supplied
 |---|---|---|
 | Table 1 | Full ARRIVE compared with its actual matched backbone checkpoint; three seeds | Both backbone source chains, comparison adapters, export/ranking/evaluation and summary code are included. Data, paper models and original outputs are not distributed. |
 | Table 2 | SASRec and SSD4Rec A/B/C comparisons with fixed pools and identical fitting requests within each comparison | Four-column removal and wrong-song treatment are included. SASRec A reuses Table 1's models. SSD4Rec uses separate backbone checkpoints and refitted rankers from Table 1; pair A/B/C within that follow-up. Original paper predictions and intervals are not distributed. |
+| Table 2 I/J | SSD4Rec identity replacement and joint source/field removal on both datasets | Portable identity mode and native joint-removal export policy are included. Keep the same Table 2 carrier lineage; J refits after regeneration and can change positive-fit counts. Original paper weights/exports remain omitted. |
 | Table 3 | SASRec-backed source replay with and without first-song transitions | The other three sources, 200-song budget, and protected backbone Top-10 stay fixed. The paper's replay needed no padding. Real source exports and coverage results are omitted. |
 | User analyses | Seed-averaged paired per-user gains and within-user/stratum averages | Summary code includes paired intervals, harm/zero/improvement, strata and ECDF coordinates. Original predictions and figure styling are not distributed. |

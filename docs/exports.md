@@ -61,6 +61,7 @@ entry's `name`, in index order):
   "surface": "train_cv",
   "seed": 2024,
   "synthetic": false,
+  "source_policy": "full",
   "feature_schema": ["ALL_31_NAMES_IN_ORDER"],
   "uses_future_labels_for_features": false,
   "sha256": {
@@ -74,7 +75,9 @@ entry's `name`, in index order):
 ```
 
 Supported seeds are 2024, 2025 and 2026. Use the same dataset, seed, synthetic
-flag and feature order across paired exports. A file hash checks byte identity;
+flag, source policy and feature order across paired exports. `source_policy`
+is `full` or `joint-removal`; older exports without it are interpreted as `full`.
+New native conversions write it explicitly. A file hash checks byte identity;
 it does **not** establish that features, counts or sources were created without
 future data. The producer must enforce the time boundaries in
 [protocol.md](protocol.md), including the Train-frozen catalog and indexes.
@@ -102,7 +105,10 @@ after selection; no Test export is accepted by the training command.
 Training writes `yeti_ndcg.cbm`, `training_manifest.json` and
 `validation_predictions.npz`. The model can contain 440 trees even when 220
 were selected. The evaluator uses `selected_trees`, checks the model hash and
-export identity, and writes `evaluation.json` plus `predictions.npz`. Scores
+export identity and source policy, and writes `evaluation.json` plus
+`predictions.npz`. Predictions also retain observed `cues` when supplied by a
+hash-bound cue bundle; legacy exports without cues remain usable outside
+identity mode. Scores
 are fractions, not percentages. No selection or tuning occurs in evaluation.
 
 For matching removal, rerun the same command with `--cue-match-mode none` and a
@@ -114,6 +120,57 @@ The CLI accepts `--smoke` only for exports declared `synthetic: true`; it uses
 5/10 trees rather than 220/440. Synthetic fixture builders are in
 `tests/test_export_io.py`. Neither smoke scores nor results on replacement
 exports should be presented as reproduction of the paper's metrics.
+
+## Identity-only matching
+
+```sh
+python scripts/train_ranker.py \
+  --train-export data/train_cv --validation-export data/validation \
+  --cue-match-mode identity --threads 4 --output outputs/identity
+
+python scripts/evaluate_ranker.py \
+  --export data/test --model-dir outputs/identity \
+  --threads 4 --output outputs/identity_test
+```
+
+This uses the same full candidate exports and fitting/calibration rules as the
+other matching arms. It zeros columns 12, 13, 14 and 16, then sets column 12 to
+`candidate_id == actual_return_song_id`. The other 27 inputs stay unchanged;
+metadata availability does not suppress a known identity. Unknown cues use ID
+1 and cannot match candidate IDs, which start at 3. This compares alternative
+representations, rather than adding matching after identity is already present.
+
+No catalog is needed. Actual cue IDs must be present as `cues` or `actual_cues`
+in hash-bound `sources.npz`, `CUE_DONORS.npz`, or `metadata.npz`, with aligned
+`row_ids` and `users`. Every supplied cue copy must agree. The cue reader does
+not use continuation targets or wrong-song donors to infer identity. Native
+conversion supplies `sources.npz/cues`; the other forms support existing
+exports. Missing, altered, misaligned or contradictory cues fail identity mode.
+
+## Joint source removal
+
+Generate and convert native exports with `source_policy: joint-removal` using
+the [native stage guide](../reproduction/README.md), then train and evaluate with
+the ordinary `true` commands above in new output directories. Filtering the
+old exported union is not a replacement for native source regeneration.
+
+J empties return-song transition and artist source slots, uses H-only anchors
+without excluding an item because it equals the return song, and rebuilds the
+retained U200-union-RRF200 fitting universe. The backbone still observes
+H-minus followed by the return song. RRF and the backbone-score feature's
+normalization are recomputed on the retained universe. The 200-song inference
+budget, protected backbone Top-10, fitting-user split and tree-selection rule
+stay fixed. Fitting omits zero-positive groups under each arm's own candidate
+policy, so J can have fewer fitted requests; record that attrition separately.
+
+Portable loading checks the empty source slots, retained-source candidate
+membership, exact RRF200 and zero removed fields (base columns
+3, 5, 12, 13, 14, 16, 19, 21, 24, 27 and context columns 15–16). Training binds
+Train and Validation source policies, and evaluation rejects a different
+policy from the saved model. Identity and wrong-song matching cannot add an
+explicit cue channel to a joint-removal model. The paper's I/J results use the
+Table 2 SSD4Rec lineage; they must not be mixed with Table 1's independent SSD
+checkpoints. Original SASRec I/J assets were unavailable in the reported run.
 
 ## Wrong-song matching
 

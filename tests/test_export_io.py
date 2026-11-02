@@ -12,8 +12,10 @@ import numpy as np
 from scipy import sparse
 from cue_donors import availability_codes, controlled_mapping, cue_match_values
 from feature_schema import feature_schema
-from export_io import (CATALOG_FILES, EXPORT_FILES, SOURCE_ORDER, digest, load_cue_treatment,
-                       load_export, load_sources, npz_dict, require_fresh_output, require_same_run)
+from export_io import (CATALOG_FILES, EXPORT_FILES, SOURCE_ORDER, digest, load_actual_cues,
+                       load_cue_treatment, load_export, load_identity_treatment, load_sources,
+                       npz_dict, require_fresh_output, require_same_run, source_policy)
+from ranking import CUE_MATCH_COLUMNS, apply_cue_match
 from source_replay import replay_row
 from candidate_fusion import rrf_pool
 from data_splits import user_partition
@@ -29,14 +31,15 @@ def rehash(root, names):
     save_manifest(root, record)
 
 
-def make_export(root, surface="train_cv", row_start=0):
+def make_export(root, surface="train_cv", row_start=0, source_policy=None):
     """Reusable synthetic input writer for local CLI smokes, not paper exports."""
     root.mkdir()
     n = 8
     base = np.arange(3, 203, dtype=np.int32)
-    sources = [base, np.asarray([203, 204, 205], np.int32), np.asarray([], np.int32), np.asarray([], np.int32)]
+    sources = [base, np.asarray([203, 204, 205] if source_policy != "joint-removal" else [], np.int32),
+               np.asarray([], np.int32), np.asarray([], np.int32)]
     pool, _, _ = rrf_pool(sources)
-    ids = np.arange(3, 206, dtype=np.int32)
+    ids = np.arange(3, 206 if source_policy != "joint-removal" else 203, dtype=np.int32)
     position = {int(item): at for at, item in enumerate(ids)}
     features = np.zeros((len(ids), 28), np.float32)
     for column, source in enumerate(sources, 2):
@@ -60,12 +63,15 @@ def make_export(root, surface="train_cv", row_start=0):
     for source, items in enumerate(sources):
         padded[:, source, :len(items)] = items
     np.savez(root / "sources.npz", row_ids=meta["row_ids"], users=meta["users"], source_ids=padded,
-             source_lengths=np.tile(np.asarray([len(items) for items in sources], np.int32), (n, 1)))
+             source_lengths=np.tile(np.asarray([len(items) for items in sources], np.int32), (n, 1)),
+             cues=np.arange(3, 3 + n, dtype=np.int64))
     record = {"schema": "arrive.reviewer_export.v1", "dataset": "synthetic_contract_fixture",
         "surface": surface, "seed": 2024, "synthetic": True, "feature_schema": feature_schema(),
         "uses_future_labels_for_features": False, "complete_source_lists": True,
         "source_order": SOURCE_ORDER,
         "sha256": {name: digest(root / name) for name in (*EXPORT_FILES, "sources.npz")}}
+    if source_policy is not None:
+        record["source_policy"] = source_policy
     save_manifest(root, record)
     return root
 
@@ -201,6 +207,84 @@ class ExportContractTests(unittest.TestCase):
             require_same_run(train, validation)
         with self.assertRaises(FileExistsError):
             require_fresh_output(self.root)
+
+    def test_identity_uses_observed_cues_and_preserves_other_fields(self):
+        sources = npz_dict(self.root / "sources.npz")
+        sources["cues"][1] = 1
+        np.savez(self.root / "sources.npz", **sources)
+        rehash(self.root, ("sources.npz",))
+        export = load_export(self.root)
+        treatment = load_identity_treatment(export)
+        before = np.arange(6 * 31, dtype=np.float32).reshape(6, 31)
+        ids = np.asarray([3, 4, 3, 1 + 3, 5, 6], np.int32)
+        queries = np.asarray([0, 0, 1, 1, 2, 2])
+        whole = apply_cue_match(before.copy(), "identity", treatment, ids, queries)
+        chunked = before.copy()
+        for lo, hi in ((0, 1), (1, 4), (4, 6)):
+            apply_cue_match(chunked[lo:hi], "identity", treatment, ids[lo:hi], queries[lo:hi])
+        np.testing.assert_array_equal(whole, chunked)
+        np.testing.assert_array_equal(whole[:, 12], [1, 0, 0, 0, 1, 0])
+        np.testing.assert_array_equal(whole[:, [13, 14, 16]], 0)
+        retained = [i for i in range(31) if i not in CUE_MATCH_COLUMNS]
+        np.testing.assert_array_equal(whole[:, retained], before[:, retained])
+        np.testing.assert_array_equal(export.features[:, [19, 21, 24, 27]], 0)
+
+    def test_identity_cues_require_binding_alignment_and_consistent_copies(self):
+        export = load_export(self.root)
+        expected = load_actual_cues(export)
+        # The loader needs no target or label access, including its metadata fallback.
+        export.meta = {key: export.meta[key] for key in ("row_ids", "users")}
+        np.testing.assert_array_equal(load_actual_cues(export), expected)
+        sources = npz_dict(self.root / "sources.npz")
+        sources["row_ids"] = sources["row_ids"][::-1]
+        np.savez(self.root / "sources.npz", **sources)
+        with self.assertRaisesRegex(ValueError, "file_hash_mismatch"):
+            load_actual_cues(export)
+        rehash(self.root, ("sources.npz",))
+        with self.assertRaisesRegex(ValueError, "actual_cue_request_order"):
+            load_actual_cues(load_export(self.root))
+        sources["row_ids"] = sources["row_ids"][::-1]
+        np.savez(self.root / "sources.npz", **sources)
+        rehash(self.root, ("sources.npz",))
+        meta = npz_dict(self.root / "metadata.npz")
+        meta["actual_cues"] = expected + 1
+        np.savez(self.root / "metadata.npz", **meta)
+        rehash(self.root, ("metadata.npz",))
+        with self.assertRaisesRegex(ValueError, "actual_cue_bundle_mismatch"):
+            load_actual_cues(load_export(self.root))
+
+    def test_identity_legacy_donor_fallback_and_missing_cues(self):
+        sources = npz_dict(self.root / "sources.npz")
+        expected = sources.pop("cues")
+        np.savez(self.root / "sources.npz", **sources)
+        rehash(self.root, ("sources.npz",))
+        self.assertIsNone(load_actual_cues(load_export(self.root), required=False))
+        with self.assertRaisesRegex(ValueError, "requires_hash_bound_actual_cues"):
+            load_identity_treatment(load_export(self.root))
+        np.savez(self.root / "CUE_DONORS.npz", row_ids=sources["row_ids"], users=sources["users"], cues=expected)
+        rehash(self.root, ("CUE_DONORS.npz",))
+        np.testing.assert_array_equal(load_actual_cues(load_export(self.root)), expected)
+
+    def test_source_policy_compatibility_and_joint_validation(self):
+        legacy = load_export(self.root)
+        self.assertEqual(source_policy(legacy.manifest), "full")
+        joint_root = make_export(self.base / "joint", "validation", 1000, "joint-removal")
+        joint = load_export(joint_root)
+        with self.assertRaisesRegex(ValueError, "export_run_mismatch:source_policy"):
+            require_same_run(legacy, joint)
+        with self.assertRaisesRegex(ValueError, "identity_requires_full_source_policy"):
+            load_identity_treatment(joint)
+        features = np.load(joint_root / "features.npy")
+        features[0, 12] = 1
+        np.save(joint_root / "features.npy", features)
+        rehash(joint_root, ("features.npy",))
+        with self.assertRaisesRegex(ValueError, "joint_removal_fields_not_zero"):
+            load_export(joint_root)
+        record = legacy.manifest
+        record["source_policy"] = "unsupported"
+        save_manifest(self.root, record)
+        with self.assertRaisesRegex(ValueError, "unknown_source_policy"):
+            load_export(self.root)
 
     def test_wrong_mapping_reuses_native_selector_and_rejects_tampering(self):
         catalog = self.base / "catalog"

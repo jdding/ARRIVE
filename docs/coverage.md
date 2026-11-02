@@ -12,17 +12,21 @@ for the native pipeline.
 | Train-only index and auxiliary model | Transition-index producer, fixed candidate recipe, held-out-row auxiliary trainer | Included with native binding checks; no full index/model rebuilt |
 | Native candidate export | Full four-source lists, protected RRF200, native 28+3 features and request context | Synthetic checks for the core functions and export bridge |
 | Matching controls | Correct/removed/mismatched arms, exact four columns 12/13/14/16, partitioned label-free donors | Synthetic tests for unchanged 27 fields, donor rules and three independent fits |
+| Identity control | Exact candidate/return-song identity replaces the four matching fields; other 27 fields and the pool remain fixed | Synthetic feature-isolation, actual-cue binding and fitting/evaluation checks |
+| Joint control | Native source policy removes return-song transitions and artist retrieval, uses history-only anchors, rebuilds pools and masks explicit cue fields | Source-policy, feature-mask, frozen-model/export compatibility and native helper checks |
 | Calibration and evaluation | User partition, positive-only fitting filter, Train-internal 220/440 tree selection, complete-target metrics | Synthetic fit/save/reload and selected-tree evaluation |
 | Test binding | Portable freeze record plus original sealed-Test schema/hash/denominator gates | Source/contract checks; no Test export rebuilt |
 | Table 1 | Backbone/ARRIVE predictions; five comparison adapters and available asset producers; 30 recorded configurations | Historical configuration bindings inspected; no baseline rerun |
-| Table 2 | Fixed-pool three-arm fitting/evaluation and paired analysis | Synthetic tests; paper's real-data scores not recomputed |
+| Table 2 | Matching/identity fitting, joint-source export and refitting, and paired analysis | Synthetic tests; paper's real-data scores not recomputed |
 | Table 3 | Native equal-budget full-source replay and three-seed Recall/Hit Rate analysis | Synthetic RRF parity and reporting tests; real-data replay not repeated |
 | Figure 2 / user analysis | Paired user gains, harm/zero/improvement, strata and unsmoothed ECDF coordinates | Synthetic user-macro/seed-averaging tests; no original predictions distributed |
+| Song-type analysis | Full-target metric partition, other-song gained/lost/shared-hit rank accounting and no-replay request summaries | Accounting checked against direct full-list metrics; no candidate refill or new real-data experiment |
 
 `tools/` provides the selected retrieval, feature and metric functions needed
 by the lightweight export interface. `reproduction/native/` supplies the full
-data preparation, training and export implementation. Its original module names
-and bytes are retained for source and model-input bindings. The portable freeze
+data preparation, training and export implementation. Original module names
+are retained; source hashes bind each new export to the actual implementation
+used to create it. The portable freeze
 schema is distinct from the historical freeze records.
 
 Remaining limits:

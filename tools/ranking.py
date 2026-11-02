@@ -20,7 +20,26 @@ CONTEXT_MODES = ("base", "statistics", "relations")
 CUE_MATCH_COLUMNS = (12, 13, 14, 16)
 
 
-CUE_MATCH_MODES = ("true", "none", "wrong")
+CUE_MATCH_MODES = ("true", "none", "wrong", "identity")
+
+
+class IdentityTreatment:
+    """Replace matching with observable song identity on a fresh feature block."""
+    def __init__(self, cues):
+        self.cues = np.asarray(cues)
+
+    def apply(self, block, ids, query_ids):
+        if block.ndim != 2 or block.shape[1] != 31 or block.dtype != np.float32 or not block.flags.writeable:
+            raise ValueError("identity_requires_writable_statistics31")
+        ids, query_ids = np.asarray(ids), np.asarray(query_ids)
+        if (ids.shape != (len(block),) or query_ids.shape != ids.shape
+                or not np.issubdtype(ids.dtype, np.integer) or np.any(ids < 3)
+                or not np.issubdtype(query_ids.dtype, np.integer)
+                or np.any(query_ids < 0) or np.any(query_ids >= len(self.cues))):
+            raise ValueError("identity_candidate_query_alignment")
+        block[:, CUE_MATCH_COLUMNS] = 0
+        block[:, 12] = ids == self.cues[query_ids]
+        return block
 
 
 def apply_cue_match(block: np.ndarray, mode: str, treatment=None, ids=None, query_ids=None) -> np.ndarray:
@@ -31,9 +50,9 @@ def apply_cue_match(block: np.ndarray, mode: str, treatment=None, ids=None, quer
         if block.ndim != 2 or block.shape[1] != 31 or block.dtype != np.float32 or not block.flags.writeable:
             raise ValueError("cue_match_ablation_requires_writable_statistics31")
         block[:, CUE_MATCH_COLUMNS] = 0
-    elif mode == "wrong":
+    elif mode in ("wrong", "identity"):
         if treatment is None or ids is None or query_ids is None:
-            raise ValueError("wrong_cue_treatment_required")
+            raise ValueError(f"{mode}_cue_treatment_required")
         treatment.apply(block,ids,query_ids)
     return block
 

@@ -9,10 +9,10 @@ sys.dont_write_bytecode = True
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "tools"))
 
 import numpy as np
-from export_io import (digest, load_cue_treatment, load_export, require_fresh_output,
-                       require_same_run, write_json)
+from export_io import (digest, load_actual_cues, load_cue_treatment, load_export, load_identity_treatment,
+                       require_fresh_output, require_same_run, source_policy, write_json)
 from feature_schema import feature_schema
-from ranking import ITERATIONS, LOSS, fit_pool, top10
+from ranking import CUE_MATCH_MODES, ITERATIONS, LOSS, fit_pool, top10
 from data_splits import user_partition
 from metrics import row_metrics, user_macro
 
@@ -22,7 +22,7 @@ def main():
     parser.add_argument("--train-export", type=Path, required=True)
     parser.add_argument("--validation-export", type=Path, required=True)
     parser.add_argument("--output", type=Path, required=True)
-    parser.add_argument("--cue-match-mode", choices=("true", "none", "wrong"), default="true")
+    parser.add_argument("--cue-match-mode", choices=CUE_MATCH_MODES, default="true")
     parser.add_argument("--catalog", type=Path, help="Required for wrong: Train-only catalog assets and manifests.")
     parser.add_argument("--threads", type=int, default=4)
     parser.add_argument("--smoke", action="store_true", help="Synthetic exports only; select among 5/10 trees.")
@@ -35,6 +35,8 @@ def main():
     require_same_run(train, validation)
     if args.smoke and not train.manifest["synthetic"]:
         raise ValueError("smoke_requires_declared_synthetic_exports")
+    if source_policy(train.manifest) == "joint-removal" and args.cue_match_mode == "wrong":
+        raise ValueError("joint_removal_cannot_add_wrong_cue_matching")
     if args.cue_match_mode == "wrong":
         if train.manifest.get("catalog_manifest_sha256") != validation.manifest.get("catalog_manifest_sha256"):
             raise ValueError("train_validation_catalog_mismatch")
@@ -43,7 +45,9 @@ def main():
     else:
         if args.catalog is not None:
             parser.error("--catalog is only used with --cue-match-mode wrong")
-        train_treatment = validation_treatment = None
+        train_treatment = load_identity_treatment(train) if args.cue_match_mode == "identity" else None
+        validation_treatment = load_identity_treatment(validation) if args.cue_match_mode == "identity" else None
+    validation_cues = load_actual_cues(validation, required=args.cue_match_mode == "identity")
     partition = user_partition(train.meta["users"])
     positive = np.add.reduceat(np.asarray(train.labels, dtype=np.int32), train.meta["offsets"][:-1]) > 0
     fit_rows = np.flatnonzero(partition & positive)
@@ -81,7 +85,8 @@ def main():
     np.savez_compressed(output / "validation_predictions.npz", row_ids=validation.meta["row_ids"],
         users=validation.meta["users"], targets=validation.meta["targets"],
         target_counts=validation.meta["target_counts"], bucket_ids=validation.meta["bucket_ids"],
-        top10=ranked, recall=recall, ndcg=ndcg)
+        top10=ranked, recall=recall, ndcg=ndcg,
+        **({"cues": validation_cues} if validation_cues is not None else {}))
     report = {"schema": "arrive.reviewer_ranker.v1", "status": "pass", "dataset": train.manifest["dataset"],
         "seed": seed, "synthetic": train.manifest["synthetic"], "smoke": args.smoke,
         "paper_metric_reproduction": False, "scope": "supplied_export_ranker_only",
@@ -91,7 +96,10 @@ def main():
         "tree_options": list(iterations), "selected_trees": selected, "calibration": calibration,
         "fit_rows": len(fit_rows), "calibration_rows": len(calibration_rows),
         "zero_positive_fit_partition_rows": int((partition & ~positive).sum()),
-        "cue_match_mode": args.cue_match_mode, "catalog_manifest_sha256": train.manifest.get("catalog_manifest_sha256")
+        "cue_match_mode": args.cue_match_mode, "source_policy": source_policy(train.manifest),
+        "identity_cue_scope": "hash_bound_observed_cues_without_targets"
+        if args.cue_match_mode == "identity" else None,
+        "catalog_manifest_sha256": train.manifest.get("catalog_manifest_sha256")
         if args.cue_match_mode == "wrong" else None,
         "wrong_cue_scope": "supplied_cues_and_catalog_checked_with_native_selector"
         if args.cue_match_mode == "wrong" else None,

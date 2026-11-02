@@ -10,9 +10,9 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "tools"))
 
 import numpy as np
 from feature_schema import feature_schema
-from export_io import (digest, load_cue_treatment, load_export, read_json,
-                       require_fresh_output, write_json)
-from ranking import LOSS, top10
+from export_io import (digest, load_actual_cues, load_cue_treatment, load_export, load_identity_treatment, read_json,
+                       require_fresh_output, source_policy, write_json)
+from ranking import CUE_MATCH_MODES, LOSS, top10
 from metrics import row_metrics, user_macro
 
 
@@ -36,7 +36,7 @@ def main():
     if (manifest.get("schema") != "arrive.reviewer_ranker.v1" or manifest.get("status") != "pass"
             or manifest.get("feature_mode") != "statistics" or manifest.get("feature_count") != 31
             or manifest.get("feature_schema") != feature_schema() or manifest.get("loss_function") != LOSS
-            or manifest.get("cue_match_mode") not in ("true", "none", "wrong")
+            or manifest.get("cue_match_mode") not in CUE_MATCH_MODES
             or type(manifest.get("selected_trees")) is not int or manifest["selected_trees"] <= 0
             or type(manifest.get("smoke")) is not bool
             or manifest.get("tree_options") != ([5, 10] if manifest.get("smoke") else [220, 440])
@@ -47,7 +47,11 @@ def main():
             or digest(model_path) != manifest.get("model_sha256")
             or any(manifest.get(key) != export.manifest[key] for key in ("dataset", "seed", "synthetic"))):
         raise ValueError("saved_ranker_contract_or_identity")
+    if source_policy(manifest) != source_policy(export.manifest):
+        raise ValueError("saved_ranker_source_policy_mismatch")
     mode = manifest["cue_match_mode"]
+    if source_policy(manifest) == "joint-removal" and mode == "wrong":
+        raise ValueError("joint_removal_cannot_add_wrong_cue_matching")
     if mode == "wrong":
         if manifest.get("catalog_manifest_sha256") != export.manifest.get("catalog_manifest_sha256"):
             raise ValueError("saved_ranker_catalog_mismatch")
@@ -55,7 +59,8 @@ def main():
     else:
         if args.catalog is not None:
             parser.error("--catalog is only used for a saved wrong-cue model")
-        treatment = None
+        treatment = load_identity_treatment(export) if mode == "identity" else None
+    actual_cues = load_actual_cues(export, required=mode == "identity")
     from catboost import CatBoostRanker
     model = CatBoostRanker()
     model.load_model(str(model_path))
@@ -70,7 +75,8 @@ def main():
         "surface": export.manifest["surface"], "synthetic": export.manifest["synthetic"],
         "paper_metric_reproduction": False, "scope": "supplied_export_ranker_only",
         "selection_or_tuning_performed": False, "new_untouched_test_claim": False,
-        "selected_trees": selected, "cue_match_mode": mode, "rows": len(ranked),
+        "selected_trees": selected, "cue_match_mode": mode, "source_policy": source_policy(export.manifest),
+        "rows": len(ranked),
         "recall": user_macro(recall, export.meta["users"], np.ones(len(recall), bool)),
         "ndcg": user_macro(ndcg, export.meta["users"], np.ones(len(ndcg), bool)),
         "export_manifest_sha256": export.fingerprint, "model_sha256": digest(model_path),
@@ -78,7 +84,8 @@ def main():
     output.mkdir(parents=True, exist_ok=False)
     np.savez_compressed(output / "predictions.npz", row_ids=export.meta["row_ids"], users=export.meta["users"],
         targets=export.meta["targets"], target_counts=export.meta["target_counts"],
-        bucket_ids=export.meta["bucket_ids"], top10=ranked, recall=recall, ndcg=ndcg)
+        bucket_ids=export.meta["bucket_ids"], top10=ranked, recall=recall, ndcg=ndcg,
+        **({"cues": actual_cues} if actual_cues is not None else {}))
     report["predictions_sha256"] = digest(output / "predictions.npz")
     write_json(output / "evaluation.json", report)
     print(json.dumps(report, allow_nan=False, indent=2))

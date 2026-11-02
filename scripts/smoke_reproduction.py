@@ -125,67 +125,87 @@ def main():
         run(REPO / "scripts/prepare_catalog.py", "--data-dir", data,
             "--audio", content / "musicnn_normalized.npy", "--genre", content / "genre_normalized.npz",
             "--tags", raw / "id_tags.csv", "--information", raw / "id_information.csv", "--output", catalog)
-        for surface in ("train_cv", "validation"):
-            run(REPO / "scripts/native.py", "run_arrive_full_rcce_control", "framework_export",
-                "--project", root, "--dataset", "music4all_onion", "--seed", "2024", "--surface", surface,
-                "--index-dir", index, "--base-checkpoint", checkpoints[surface],
-                "--base-manifest", checkpoints[surface].parent / "training_manifest.json",
-                "--output", root / ("native_" + surface), "--device", "cpu", "--threads", "1")
-            run(REPO / "scripts/convert_native_export.py", "--input", root / ("native_" + surface),
-                "--output", root / ("export_" + surface), "--catalog", catalog)
-        # Exercise the same native fold merger with two toy folds. The paper
-        # uses five Yambda folds; this is only an interface/coverage check.
-        import numpy as np
-        import torch
-        from arrive_train_fold_coverage import fold_of_rows
-        train_rows, _, assignments = fold_of_rows(data, 2, 20260927)
-        folds = root / "folds"
-        for fold in range(2):
-            directory = folds / f"fold{fold}"
-            directory.mkdir(parents=True)
-            fold_index = directory / "index"
-            shutil.copytree(index, fold_index)
-            excluded = train_rows[assignments == fold]
-            np.save(fold_index / "cv_rows.npy", excluded)
-            im = json.loads((fold_index / "index_manifest.json").read_text())
-            im["artifacts"]["cv_rows.npy"]["sha256"] = sha(fold_index / "cv_rows.npy")
-            save_json(fold_index / "index_manifest.json", im)
-            base = directory / "base"
-            base.mkdir()
-            bm = json.loads((checkpoints["train_cv"].parent / "training_manifest.json").read_text())
-            bm.update(excluded_cv_rows=len(excluded), train_rows=len(train_rows)-len(excluded))
-            bm["binding"].update(cv_rows_sha256=sha(fold_index / "cv_rows.npy"),
-                index_manifest_sha256=sha(fold_index / "index_manifest.json"),
-                full_base_manifest_sha256=sha(checkpoints["validation"].parent / "training_manifest.json"))
-            state = torch.load(checkpoints["train_cv"], map_location="cpu", weights_only=False)
-            state["binding"] = bm["binding"]
-            torch.save(state, base / "final_model.pt")
-            bm["final_model_sha256"] = sha(base / "final_model.pt")
-            save_json(base / "training_manifest.json", bm)
-            run(REPO / "scripts/native.py", "run_arrive_full_rcce_control", "framework_export",
-                "--project", root, "--dataset", "music4all_onion", "--seed", "2024", "--surface", "train_cv",
-                "--index-dir", fold_index, "--base-checkpoint", base / "final_model.pt",
-                "--base-manifest", base / "training_manifest.json", "--output", directory / "export",
-                "--device", "cpu", "--threads", "1")
-        run(REPO / "scripts/native.py", "arrive_train_fold_coverage", "merge", "--project", root,
-            "--dataset", "music4all_onion", "--data-dir", data, "--seed", "2024", "--folds", "2",
-            "--assignment-seed", "20260927", "--fold-root", folds, "--storage", "physical",
-            "--output", root / "native_fold_merge")
-        run(REPO / "scripts/convert_native_export.py", "--input", root / "native_fold_merge",
-            "--output", root / "export_fold_merge", "--catalog", catalog, "--prepared-data", data)
-        for arm in ("true", "none", "wrong"):
-            treatment = ["--catalog", catalog] if arm == "wrong" else []
-            run(REPO / "scripts/train_ranker.py", "--train-export", root / "export_fold_merge",
-                "--validation-export", root / "export_validation", "--output", root / ("model_" + arm),
-                "--cue-match-mode", arm, "--threads", "1", "--smoke", *treatment)
-            run(REPO / "scripts/evaluate_ranker.py", "--export", root / "export_validation",
-                "--model-dir", root / ("model_" + arm), "--output", root / ("evaluation_" + arm),
-                "--threads", "1", *treatment)
-        run(REPO / "scripts/replay_coverage.py", "--export", root / "export_validation",
-            "--output", root / "coverage")
+        for policy in ("full", "joint-removal"):
+            suffix = "" if policy == "full" else "_joint"
+            for surface in ("train_cv", "validation"):
+                run(REPO / "scripts/native.py", "run_arrive_full_rcce_control", "framework_export",
+                    "--project", root, "--dataset", "music4all_onion", "--seed", "2024", "--surface", surface,
+                    "--index-dir", index, "--base-checkpoint", checkpoints[surface],
+                    "--base-manifest", checkpoints[surface].parent / "training_manifest.json",
+                    "--source-policy", policy, "--output", root / ("native_" + surface + suffix), "--device", "cpu", "--threads", "1")
+                run(REPO / "scripts/convert_native_export.py", "--input", root / ("native_" + surface + suffix),
+                    "--output", root / ("export_" + surface + suffix), *(["--catalog", catalog] if policy == "full" else []))
+                if policy == "joint-removal":
+                    import numpy as np
+                    path = root / ("native_" + surface + suffix)
+                    features = np.load(path / "features.npy")
+                    with np.load(path / "metadata.npz") as z:
+                        offsets = z["offsets"]
+                    with np.load(path / "sources.npz") as z:
+                        source_ids, lengths = z["source_ids"], z["source_lengths"]
+                    all_candidates = np.load(path / "candidate_ids.npy")
+                    for at, (lo, hi) in enumerate(zip(offsets[:-1], offsets[1:])):
+                        assert abs(features[lo:hi, 0].mean()) < 1e-5
+                        maps = [{int(i): r+1 for r, i in enumerate(ids[:n])}
+                            for ids, n in zip(source_ids[at], lengths[at])]
+                        candidates = all_candidates[lo:hi]
+                        expected = [sum(1/(60+m[int(i)]) for m in maps if int(i) in m) for i in candidates]
+                        np.testing.assert_allclose(features[lo:hi, 1], expected, rtol=1e-6)
+            # Exercise the same native fold merger with two toy folds. The paper
+            # uses five Yambda folds; this is only an interface/coverage check.
+            import numpy as np
+            import torch
+            from arrive_train_fold_coverage import fold_of_rows
+            train_rows, _, assignments = fold_of_rows(data, 2, 20260927)
+            folds = root / ("folds" + suffix)
+            for fold in range(2):
+                directory = folds / f"fold{fold}"
+                directory.mkdir(parents=True)
+                fold_index = directory / "index"
+                shutil.copytree(index, fold_index)
+                excluded = train_rows[assignments == fold]
+                np.save(fold_index / "cv_rows.npy", excluded)
+                im = json.loads((fold_index / "index_manifest.json").read_text())
+                im["artifacts"]["cv_rows.npy"]["sha256"] = sha(fold_index / "cv_rows.npy")
+                save_json(fold_index / "index_manifest.json", im)
+                base = directory / "base"
+                base.mkdir()
+                bm = json.loads((checkpoints["train_cv"].parent / "training_manifest.json").read_text())
+                bm.update(excluded_cv_rows=len(excluded), train_rows=len(train_rows)-len(excluded))
+                bm["binding"].update(cv_rows_sha256=sha(fold_index / "cv_rows.npy"),
+                    index_manifest_sha256=sha(fold_index / "index_manifest.json"),
+                    full_base_manifest_sha256=sha(checkpoints["validation"].parent / "training_manifest.json"))
+                state = torch.load(checkpoints["train_cv"], map_location="cpu", weights_only=False)
+                state["binding"] = bm["binding"]
+                torch.save(state, base / "final_model.pt")
+                bm["final_model_sha256"] = sha(base / "final_model.pt")
+                save_json(base / "training_manifest.json", bm)
+                run(REPO / "scripts/native.py", "run_arrive_full_rcce_control", "framework_export",
+                    "--project", root, "--dataset", "music4all_onion", "--seed", "2024", "--surface", "train_cv",
+                    "--index-dir", fold_index, "--base-checkpoint", base / "final_model.pt",
+                    "--base-manifest", base / "training_manifest.json", "--source-policy", policy, "--output", directory / "export",
+                    "--device", "cpu", "--threads", "1")
+            run(REPO / "scripts/native.py", "arrive_train_fold_coverage", "merge", "--project", root,
+                "--dataset", "music4all_onion", "--data-dir", data, "--seed", "2024", "--folds", "2",
+                "--assignment-seed", "20260927", "--fold-root", folds, "--storage", "physical",
+                "--source-policy", policy, "--output", root / ("native_fold_merge" + suffix))
+            run(REPO / "scripts/convert_native_export.py", "--input", root / ("native_fold_merge" + suffix),
+                "--output", root / ("export_fold_merge" + suffix), "--prepared-data", data,
+                *(["--catalog", catalog] if policy == "full" else []))
+            for arm in (("true", "none", "wrong", "identity") if policy == "full" else ("true",)):
+                treatment = ["--catalog", catalog] if arm == "wrong" else []
+                run(REPO / "scripts/train_ranker.py", "--train-export", root / ("export_fold_merge" + suffix),
+                    "--validation-export", root / ("export_validation" + suffix), "--output", root / ("model_" + arm + suffix),
+                    "--cue-match-mode", arm, "--threads", "1", "--smoke", *treatment)
+                run(REPO / "scripts/evaluate_ranker.py", "--export", root / ("export_validation" + suffix),
+                    "--model-dir", root / ("model_" + arm + suffix), "--output", root / ("evaluation_" + arm + suffix),
+                    "--threads", "1", *treatment)
+            if policy == "full":
+                run(REPO / "scripts/replay_coverage.py", "--export", root / ("export_validation" + suffix),
+                    "--output", root / "coverage")
     print(json.dumps(dict(status="pass", synthetic=True, dataset="toy_onion_layout",
         backbone="randomly_initialized_sasrec_no_optimizer", native_export_surfaces=["train_cv", "validation"],
-        ranker_arms=["true", "none", "wrong"], source_replay=True,
+        ranker_arms=["true", "none", "wrong", "identity"], source_policies=["full", "joint-removal"], source_replay=True,
         toy_fold_merge=True,
         real_data_accessed=False, gpu_used=False, paper_metric_reproduction=False)))
 

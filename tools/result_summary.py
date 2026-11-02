@@ -56,15 +56,33 @@ def load_predictions(entry, base):
         if not 1 <= count <= len(truth) or len(np.unique(truth[:count])) != count or np.isin(truth[:count], [-1, 0, 1, 2]).any():
             raise ValueError("complete_distinct_targets_required")
     result["recall"], result["ndcg"] = row_metrics(top, result["targets"], result["target_counts"])
+    result["top10"] = top
     for name in ("recall", "ndcg"):
         if name in raw and not np.allclose(raw[name][order], result[name], rtol=0, atol=1e-12):
             raise ValueError("stored_metric_disagrees:" + name)
     if "cue_bundle" in entry:
-        cue = npz_dict(input_path(base, entry, "cue_bundle"))
+        cue_path = input_path(base, entry, "cue_bundle")
+        cue_hash = digest(cue_path)
+        if entry.get("cue_bundle_sha256") is not None and entry["cue_bundle_sha256"] != cue_hash:
+            raise ValueError("cue_bundle_hash_mismatch")
+        cue = npz_dict(cue_path)
+        result["cue_bundle_sha256"] = cue_hash
         cue_order = np.argsort(cue["row_ids"])
         if not np.array_equal(cue["row_ids"][cue_order], result["row_ids"]):
             raise ValueError("cue_bundle_request_identity")
         result["eligible"] = cue["eligible"][cue_order]
+        if "cues" in cue:
+            if (cue["cues"].shape != (n,) or not np.issubdtype(cue["cues"].dtype, np.integer)
+                    or not np.array_equal(cue["users"][cue_order], result["users"])):
+                raise ValueError("cue_bundle_shape_or_user_identity")
+            result["cues"] = cue["cues"][cue_order]
+    if "cues" in raw:
+        if raw["cues"].shape != (n,) or not np.issubdtype(raw["cues"].dtype, np.integer):
+            raise ValueError("prediction_cue_shape_or_type")
+        actual = raw["cues"][order]
+        if "cues" in result and not np.array_equal(actual, result["cues"]):
+            raise ValueError("prediction_cue_disagreement")
+        result["cues"] = actual
     result["input_sha256"] = actual_hash
     return result
 
@@ -97,6 +115,39 @@ def contrast(left, right, users, mask, draws, random_seed):
         per_seed_delta_pp=(100 * (left_users - right_users).mean(axis=1)).tolist())
 
 
+def song_type_contributions(record):
+    """Partition the original metrics, without changing ranks or denominators."""
+    result = {kind: {metric: np.zeros(len(record["users"])) for metric in ("recall", "ndcg")}
+              for kind in ("replay", "other")}
+    discount = 1 / np.log2(np.arange(2, 12))
+    for q, (top, count, cue) in enumerate(zip(record["top10"], record["target_counts"], record["cues"])):
+        truth = record["targets"][q, :count]
+        relevant = np.isin(top, truth)
+        for kind, mask in (("replay", top == cue), ("other", top != cue)):
+            hit = relevant & mask
+            result[kind]["recall"][q] = hit.sum() / count
+            result[kind]["ndcg"][q] = discount[hit].sum() / discount[:min(count, 10)].sum()
+    return result
+
+
+def other_song_rank_terms(a, b):
+    """Exact other-song NDCG accounting: gained, lost, shared-hit rank changes."""
+    align([a, b], IDENTITY + ("cues",))
+    values = {key: np.zeros(len(a["users"])) for key in ("gained", "lost", "shared_rank")}
+    discount = 1 / np.log2(np.arange(2, 12))
+    for q, count in enumerate(a["target_counts"]):
+        truth = set(map(int, a["targets"][q, :count])) - {int(a["cues"][q])}
+        ranks = [{int(item): rank for rank, item in enumerate(r["top10"][q]) if item in truth}
+                 for r in (a, b)]
+        left, right = map(set, ranks)
+        ideal = discount[:min(count, 10)].sum()
+        values["gained"][q] = sum(discount[ranks[0][i]] for i in left - right) / ideal
+        values["lost"][q] = -sum(discount[ranks[1][i]] for i in right - left) / ideal
+        values["shared_rank"][q] = sum(discount[ranks[0][i]] - discount[ranks[1][i]]
+                                        for i in left & right) / ideal
+    return values
+
+
 def summarize(config, base):
     random_seed = config.get("bootstrap_seed", 20261007)
     draws = config.get("bootstrap_draws", {"sasrec": 10000, "ssd4rec": 10000})
@@ -120,7 +171,9 @@ def summarize(config, base):
             row[metric] = summary(np.asarray([r[metric] for r in records]), records[0]["users"])
         tables.append(row)
         inputs.extend(dict(dataset=key[0], backbone=key[1], method=key[2], seed=s,
-                           predictions_sha256=seeds[s]["input_sha256"]) for s in SEEDS)
+                           predictions_sha256=seeds[s]["input_sha256"],
+                           **({"cue_bundle_sha256": seeds[s]["cue_bundle_sha256"]}
+                              if "cue_bundle_sha256" in seeds[s] else {})) for s in SEEDS)
     for dataset, backbone in sorted({key[:2] for key in groups}):
         akey = (dataset, backbone, "arrive")
         if akey not in groups:
@@ -129,7 +182,7 @@ def summarize(config, base):
         meta = a[0]
         users = meta["users"]
         all_rows = np.ones(len(users), bool)
-        for control in ("backbone", "removed", "mismatched"):
+        for control in ("backbone", "removed", "mismatched", "identity", "joint-removal"):
             bkey = (dataset, backbone, control)
             if bkey not in groups:
                 continue
@@ -147,6 +200,29 @@ def summarize(config, base):
                     result[metric]["interval_family"] = (
                         "sasrec_prespecified_four_matching_contrasts" if backbone == "sasrec"
                         else "ssd4rec_followup_four_matching_contrasts")
+                if control in ("identity", "joint-removal") and metric == "ndcg":
+                    result[metric]["interval_role"] = "98.75_percent_control_interval"
+                    result[metric]["interval_family"] = control.replace("-", "_") + "_controls"
+            if all("cues" in r for r in a + b):
+                align(a + b, IDENTITY + ("cues",))
+                parts = [[song_type_contributions(r) for r in records] for records in (a, b)]
+                result["song_type"] = {
+                    kind: {metric: contrast(np.asarray([r[kind][metric] for r in parts[0]]),
+                        np.asarray([r[kind][metric] for r in parts[1]]), users, all_rows, count, random_seed)
+                        for metric in ("recall", "ndcg")}
+                    for kind in ("replay", "other")}
+                terms = [other_song_rank_terms(x, y) for x, y in zip(a, b)]
+                result["other_song_rank_terms"] = {
+                    name: contrast(np.asarray([r[name] for r in terms]),
+                        np.zeros((len(SEEDS), len(users))), users, all_rows, count, random_seed)
+                    for name in ("gained", "lost", "shared_rank")}
+                replay = np.asarray([int(cue) in truth[:n] for cue, truth, n in
+                    zip(meta["cues"], meta["targets"], meta["target_counts"])])
+                known_no_replay = (meta["cues"] >= 3) & ~replay
+                result["no_replay_scope"] = "known_catalog_cue_absent_from_full_target_set"
+                result["no_replay_requests"] = {metric: contrast(
+                    np.asarray([r[metric] for r in a]), np.asarray([r[metric] for r in b]),
+                    users, known_no_replay, count, random_seed) for metric in ("recall", "ndcg")}
             if control == "backbone":
                 left, right = [np.asarray([r["ndcg"] for r in records]) for records in (a, b)]
                 user_ids, delta = user_values((left - right).mean(axis=0), users)

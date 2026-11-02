@@ -18,6 +18,15 @@ from feature_schema import feature_schema
 EXPORT_FILES = ("features.npy", "candidate_ids.npy", "labels.npy", "metadata.npz", "REQUEST_CONTEXT.npz")
 SOURCE_ORDER = ["backbone", "first_track_transition", "history_transition", "artist"]
 CATALOG_FILES = ("artists.npy", "audio.npy", "tags.npz", "genre.npz", "train_frequencies.npy")
+SOURCE_POLICIES = ("full", "joint-removal")
+JOINT_REMOVED_COLUMNS = (3, 5, 12, 13, 14, 16, 19, 21, 24, 27)
+
+
+def source_policy(manifest):
+    policy = manifest.get("source_policy", "full")
+    if policy not in SOURCE_POLICIES:
+        raise ValueError("unknown_source_policy")
+    return policy
 
 
 def digest(path):
@@ -86,6 +95,7 @@ class Export:
 def load_export(root, surface=None):
     root = Path(root)
     manifest = read_json(root / "EXPORT_MANIFEST.json")
+    policy = source_policy(manifest)
     if (manifest.get("schema") != "arrive.reviewer_export.v1"
             or manifest.get("surface") not in ("train_cv", "validation", "test")
             or (surface is not None and manifest.get("surface") != surface)
@@ -158,13 +168,30 @@ def load_export(root, surface=None):
     if not (np.array_equal(context["row_ids"], rows) and np.array_equal(context["users"], meta["users"])):
         raise ValueError("request_context_order_mismatch")
     finite_float32(context["relation"], (n, 18), "request_context")
-    return Export(root, features, ids, labels, meta, context["relation"], manifest)
+    export = Export(root, features, ids, labels, meta, context["relation"], manifest)
+    if policy == "joint-removal":
+        if np.any(features[:, JOINT_REMOVED_COLUMNS]) or np.any(export.context[:, 15:17]):
+            raise ValueError("joint_removal_fields_not_zero")
+        from candidate_fusion import rrf_pool
+        for row, sources in enumerate(load_sources(export)):
+            lo, hi = offsets[row:row + 2]
+            candidates = ids[lo:hi]
+            if len(sources[1]) or len(sources[3]):
+                raise ValueError("joint_removal_sources_not_empty")
+            if not np.isin(candidates, np.concatenate((sources[0], sources[2]))).all():
+                raise ValueError("joint_removal_unretained_candidate")
+            pool = rrf_pool(sources, budget=200)[0]
+            if not np.array_equal(pool, candidates[meta["rrf_indices"][row]]):
+                raise ValueError("joint_removal_RRF200_mismatch")
+    return export
 
 
 def require_same_run(train, other):
     for key in ("dataset", "seed", "synthetic"):
         if train.manifest[key] != other.manifest[key]:
             raise ValueError(f"export_run_mismatch:{key}")
+    if source_policy(train.manifest) != source_policy(other.manifest):
+        raise ValueError("export_run_mismatch:source_policy")
     if np.intersect1d(train.meta["row_ids"], other.meta["row_ids"]).size:
         raise ValueError("train_validation_request_overlap")
 
@@ -196,6 +223,42 @@ def load_sources(export):
                 raise ValueError("duplicate_source_items")
     return [[data["source_ids"][r, s, :int(data["source_lengths"][r, s])]
              for s in range(4)] for r in range(n)]
+
+
+def load_actual_cues(export, required=True):
+    """Read only observed cue identities and alignment from hash-bound bundles."""
+    cues = None
+    for name in ("sources.npz", "CUE_DONORS.npz", "metadata.npz"):
+        if name not in export.manifest.get("sha256", {}):
+            continue
+        with np.load(checked_file(export.root, export.manifest, name), allow_pickle=False) as data:
+            keys = [key for key in ("cues", "actual_cues") if key in data.files]
+            if not keys:
+                continue
+            for field in ("row_ids", "users"):
+                if field not in data.files:
+                    raise ValueError("actual_cue_request_order_mismatch")
+                integer_array(data[field], export.meta[field].shape, 0, "actual_cue_" + field)
+                if not np.array_equal(data[field], export.meta[field]):
+                    raise ValueError("actual_cue_request_order_mismatch")
+            for key in keys:
+                values = data[key]
+                integer_array(values, (len(export.meta["row_ids"]),), 1, "actual_cues")
+                if np.any(values > np.iinfo(np.int32).max) or np.any((values < 3) & (values != 1)):
+                    raise ValueError("actual_cue_identity")
+                if cues is not None and not np.array_equal(values, cues):
+                    raise ValueError("actual_cue_bundle_mismatch")
+                cues = values.copy()
+    if cues is None and required:
+        raise ValueError("identity_requires_hash_bound_actual_cues")
+    return cues
+
+
+def load_identity_treatment(export):
+    if source_policy(export.manifest) != "full":
+        raise ValueError("identity_requires_full_source_policy")
+    from ranking import IdentityTreatment
+    return IdentityTreatment(load_actual_cues(export))
 
 
 def load_cue_treatment(export, catalog_root):

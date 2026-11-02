@@ -32,6 +32,14 @@ from run_music4all_component_c2_conversion_oof import row_metrics, user_macro
 
 SEEDS = (2024, 2025, 2026)
 GRID = ((31, 220), (31, 440), (63, 220), (63, 440))
+JOINT_REMOVED_COLUMNS = (3, 5, 12, 13, 14, 16, 19, 21, 24, 27)
+
+
+def history_only_anchors(events, session, limit=5):
+    """Read H-minus without excluding an anchor by the observed cue identity."""
+    begin = max(int(session[1]), int(session[2]) - 128)
+    past = events[begin:int(session[2])]
+    return list(dict.fromkeys(int(i) for i in past[::-1] if int(i) >= 3))[:limit]
 
 
 def parent_paths(project: Path, seed: int, surface: str) -> dict[str, Path]:
@@ -742,12 +750,13 @@ def framework_export(args):
     """Export the retained U220-union-RRF feature space, without fitting old heads."""
     import tempfile
     from arrive_framework_datasets import (bundle, metadata_args, feature_input_paths,
-        hashes, feature_schema, code_bindings, EXPORT_SCHEMA, EXPORT_FILES)
+        hashes, feature_schema, code_bindings, source_policy, EXPORT_SCHEMA, EXPORT_FILES)
     from run_music4all_candidate_support_a1 import load_base_data
     from run_arrive_recent_ranker import request_relations
-    from lfm_timeconcat_control import LFMTimeConcatData, gap_bucket
+    from lfm_timeconcat_control import gap_bucket
     from evaluate_arrive_frozen_test import validate_test
     ds = bundle(args.project, args.dataset)
+    policy = source_policy(vars(args))
     legacy20k = getattr(args, "legacy20k_retrieval", False)
     if legacy20k and (args.dataset != "music4all_onion" or args.surface not in ("validation", "test")):
         raise ValueError("legacy20k_retrieval_scope")
@@ -763,17 +772,25 @@ def framework_export(args):
             _, freeze = validate_before_test(args)
         if legacy20k != (freeze.get("retrieval_contract") == "legacy20k_64_128_512"):
             raise ValueError("frozen_retrieval_contract")
+        if source_policy(freeze) != policy:
+            raise ValueError("frozen_source_policy")
         validate_test(args)
         data_dir = args.test_data
     else:
         freeze = None
         data_dir = Path(ds["data_dir"])
-    data = LFMTimeConcatData(data_dir, max_context=129, horizon=64)
     parent_args = SimpleNamespace(data_dir=Path(ds["data_dir"]), max_context=129, horizon=64,
         event_times=Path(ds["event_times"]), muse_counts=Path(ds["muse_counts"]),
         ssd4rec_source=args.project/"vendor/ssd4rec_official/ssd4rec.py", device=args.device,
         surface=args.surface)
     train_data = load_base_data(parent_args, args.base_manifest)
+    if args.surface == "test":
+        serving_args = SimpleNamespace(**vars(parent_args))
+        serving_args.data_dir = data_dir
+        serving_args.event_times = data_dir / "event_times.npy"
+        data = load_base_data(serving_args, args.base_manifest)
+    else:
+        data = train_data
     bm = json.loads(args.base_manifest.read_text())
     if bm.get("binding", {}).get("configuration", {}).get("seed") != args.seed:
         raise ValueError("framework_base_seed")
@@ -826,6 +843,8 @@ def framework_export(args):
     # Train includes short-gap rows; legacy bucket mapping uses bucket0 for those.
     buckets = np.asarray([scopes.index(gap_bucket(data.gap_days(int(r)))) if data.gap_days(int(r))>=30 else 0 for r in rows])
     relation = request_relations(data,rows,items,audio,genre,tags,artists,x,h,frequency)
+    if policy == "joint-removal":
+        relation[:, 15:17] = 0
     offsets=[0]; indices=[]; xcache={}
     complete_sources = np.zeros((len(rows), 4, 200), dtype=np.int32)
     source_lengths = np.zeros((len(rows), 4), dtype=np.int32)
@@ -861,13 +880,16 @@ def framework_export(args):
                              "proposal_candidates":np.asarray([[proposals]]),
                              "proposal_base_ranks":np.asarray([[[artist_map.get(int(i),201) for i in proposals]]])}
                         sources[0]=reconciled_base_order(bases[j],raw,0,states[j],items)
+                    if policy == "joint-removal":
+                        history = history_only_anchors(data.events, session)
+                        sources = [sources[0], [], ranked_history(h, history, frequency, 0., 200), []]
                     actual_cues[at] = cue
                     for source_index, source in enumerate(sources):
                         source_lengths[at, source_index] = len(source)
                         complete_sources[at, source_index, :len(source)] = source
                     old=merge_candidates(sources[0],sources[1],sources[2],popularity,relation_slots=40,x_fraction=.75,budget=200)
                     old_set=set(map(int,old))
-                    extras=[i for i in artist_source if i not in old_set][:20]
+                    extras=([i for i in artist_source if i not in old_set][:20] if policy == "full" else [])
                     rrf,_,_=rrf_pool(sources,budget=200)
                     ids=np.asarray(list(dict.fromkeys([*map(int,old),*extras,*map(int,rrf)])),np.int32)
                     position={int(i):k for k,i in enumerate(ids)}
@@ -876,7 +898,12 @@ def framework_export(args):
                     lo=offsets[-1]; hi=lo+len(ids)
                     # Match the legacy export's float32 gap storage before log1p.
                     gap = float(np.float32(data.gap_days(int(rid))))
-                    fx[lo:hi]=row_feature(ids,states[j],items,maps,gap,int(buckets[at]),frequency,cue,history,artists,tags,audio,genre)
+                    block=row_feature(ids,states[j],items,maps,gap,int(buckets[at]),frequency,cue,history,artists,tags,audio,genre)
+                    if policy == "joint-removal":
+                        block[:, JOINT_REMOVED_COLUMNS] = 0
+                        if not set(map(int, ids)) <= (set(sources[0]) | set(sources[2])):
+                            raise ValueError("joint_removed_source_survives")
+                    fx[lo:hi]=block
                     fi[lo:hi]=ids; fy[lo:hi]=np.isin(ids,truth[at]); offsets.append(hi)
         for src in (fx,fi,fy):
             finish_npy(src,offsets[-1])
@@ -891,12 +918,14 @@ def framework_export(args):
         inputs.update(base_checkpoint=digest(args.base_checkpoint),base_manifest=digest(args.base_manifest))
         m={"schema":EXPORT_SCHEMA,"status":"pass","dataset":args.dataset,"seed":args.seed,
             "surface":args.surface,"rows":len(rows),"limit":0,"test_accessed":args.surface=="test",
+            "source_policy":policy,
             "synthetic":bm.get("synthetic", False),
             "feature_schema":feature_schema(),"code_sha256":code_bindings(),"serving_inputs":inputs,
             "prepared_sha256":prepared,"index_manifest_sha256":digest(index/"index_manifest.json"),
             "base_manifest":str(args.base_manifest.resolve()),"index_dir":str(index.resolve()),
             "output_sha256":{n:digest(stage/n) for n in EXPORT_FILES},
-            "training_policy":"joint_U220_plus_full_source_RRF_C200"}
+            "training_policy":("joint_U220_plus_full_source_RRF_C200" if policy == "full"
+                else "retained_U200_base_history_plus_RRF_C200")}
         m["retrieval_contract"]="legacy20k_64_128_512" if legacy20k else "direct"
         m["reproduction_sources_sha256"] = digest(stage / "sources.npz")
         if freeze is not None:
@@ -924,6 +953,7 @@ def main():
     parser.add_argument("--threads", type=int, default=4)
     parser.add_argument("--batch-size", type=int, default=128)
     parser.add_argument("--legacy20k-retrieval", action="store_true")
+    parser.add_argument("--source-policy", choices=("full", "joint-removal"), default="full")
     parser.add_argument("--reviewer-export-interface", action="store_true",
         help="Use a separately bound reviewer_freeze.v1 record for portable Test reproduction.")
     args = parser.parse_args()
@@ -931,6 +961,8 @@ def main():
         parser.error("seed_required")
     if args.mode == "export" and args.surface is None:
         parser.error("surface_required")
+    if args.mode != "framework_export" and args.source_policy != "full":
+        parser.error("joint-removal is available through framework_export")
     torch.set_num_threads(args.threads)
     start = time.monotonic()
     if args.mode == "framework_export" and not all((args.dataset, args.surface, args.base_checkpoint, args.base_manifest)):
