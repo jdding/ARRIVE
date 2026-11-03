@@ -157,8 +157,8 @@ fixed-pool matching increment or interpret it as a percentage of Table 1 gains.
 New exports and models declare `source_policy` explicitly; historical missing
 values mean `full`, and paired training/evaluation must keep the policy matched.
 
-Identity and joint controls were completed for Onion/Yambda with the original
-Table 2 SSD4Rec checkpoints and seeds 2024–2026. Missing original SASRec carrier
+Identity and joint controls were completed for Onion/Yambda with the shared
+Table 1/Table 2 SSD4Rec checkpoints and seeds 2024–2026. Missing original SASRec carrier
 assets do not establish results under that carrier. The source interface can
 be executed with new, fully bound assets, but this is not recovery of the
 historical paper checkpoint lineage.
@@ -195,8 +195,8 @@ analysis on saved predictions; the paper's original predictions are not supplied
 
 | Paper result | Protocol | Included helpers / limits |
 |---|---|---|
-| Table 1 | Full ARRIVE compared with its actual matched backbone checkpoint; three seeds | Both backbone source chains, comparison adapters, export/ranking/evaluation and summary code are included. Data, paper models and original outputs are not distributed. |
-| Table 2 | SASRec and SSD4Rec A/B/C comparisons with fixed pools and identical fitting requests within each comparison | Four-column removal and wrong-song treatment are included. SASRec A reuses Table 1's models. SSD4Rec uses separate backbone checkpoints and refitted rankers from Table 1; pair A/B/C within that follow-up. Original paper predictions and intervals are not distributed. |
+| Table 1 | Full ARRIVE compared with its actual matched backbone checkpoint; three seeds | Both backbone source chains, comparison adapters, export/ranking/evaluation and summary code are included. Each seed uses the same frozen checkpoint and full ARRIVE model as Table 2. Data, paper models and original outputs are not distributed. |
+| Table 2 | SASRec and SSD4Rec A/B/C comparisons with fixed pools and identical fitting requests within each comparison | Four-column removal and wrong-song treatment are included. For both backbones, A reuses Table 1's full ARRIVE model and frozen backbone checkpoint. Pair A/B/C within each seed. Original paper predictions and intervals are not distributed. |
 | Table 2 I/J | SSD4Rec identity replacement and joint source/field removal on both datasets | Portable identity mode and native joint-removal export policy are included. Keep the same Table 2 carrier lineage; J refits after regeneration and can change positive-fit counts. Original paper weights/exports remain omitted. |
 | Table 3 | SASRec-backed source replay with and without first-song transitions | The other three sources, 200-song budget, and protected backbone Top-10 stay fixed. The paper's replay needed no padding. Real source exports and coverage results are omitted. |
 | User analyses | Seed-averaged paired per-user gains and within-user/stratum averages | Summary code includes paired intervals, harm/zero/improvement, strata and ECDF coordinates. Original predictions and figure styling are not distributed. |
@@ -204,6 +204,13 @@ analysis on saved predictions; the paper's original predictions are not supplied
 ## Additional result details
 
 Differences use unrounded three-seed user-macro means. The paired bootstrap resamples users after matched-seed averaging, with fitted models held fixed. Wrong-song donors are selected separately in fitting, calibration and evaluation partitions, preserving metadata availability and using the training-popularity bin where possible; no continuation labels enter donor selection.
+
+The SSD4Rec Table 1 pairs share Table 2's frozen checkpoints and full ARRIVE models within each seed. Their NDCG@10 means and paired gains are below; means are in metric units, and gains and 95% intervals are in percentage points. Displayed values are rounded.
+
+| Dataset | ARRIVE mean | Backbone mean | Gain | 95% interval |
+|---|---:|---:|---:|---:|
+| Onion | 0.3482 | 0.2915 | 5.66 | [5.25, 6.08] |
+| Yambda | 0.1614 | 0.0821 | 7.93 | [7.54, 8.33] |
 
 The table below gives ARRIVE minus w/o matching in percentage points. Replay and other-song contributions retain the original ranks and the full-target metric denominator.
 
@@ -220,7 +227,7 @@ Correct matching exceeds the wrong-song control by 0.56 and 1.19 NDCG points on 
 
 For source coverage, Onion's Recall@200 increment is 0.09 points with 95% interval [-0.03, 0.22]. At the fixed budget, adding the return-song transition source adds 111 and displaces 100 covered target occurrences per seed on average. For known-return-song requests without later replay, Onion's Hit Rate increment is 0.26 points ([0.04, 0.48]); its Recall interval includes zero. Yambda's full-cohort and no-replay gains are reported in the manuscript.
 
-The user-level analysis uses ARRIVE versus its actual Table 1 backbone, not the separate Table 2 SSD4Rec checkpoints. On Onion, 79.5% of users losing NDCG have unchanged or higher Recall with either backbone. Their loss shares are 7.1%/7.6% among users with any unusable return-song request and 14.4%/16.2% among users with all requests usable (SASRec/SSD4Rec).
+The user-level analysis compares full ARRIVE with its actual Table 1 backbone within each seed, using the checkpoints shared with Table 2. With SSD4Rec, NDCG improves for 41.98% of Onion users, is unchanged for 43.80%, and decreases for 14.22%; the corresponding Yambda shares are 31.60%, 61.88%, and 6.52%. Gains average requests within each user before averaging matching seeds.
 
 ### Metadata groups and mean gains
 
@@ -229,8 +236,8 @@ A request has usable metadata when its actual return-song ID is in the catalog a
 | Dataset | Backbone | All-usable users | Mean gain | Users with any unusable request | Mean gain |
 |---|---|---:|---:|---:|---:|
 | Onion | SASRec | 4,495 | 7.5377 | 1,236 | 2.5007 |
-| Onion | SSD4Rec | 4,495 | 6.6827 | 1,236 | 2.0207 |
+| Onion | SSD4Rec | 4,495 | 6.6306 | 1,236 | 2.1426 |
 | Yambda | SASRec | 6,508 | 13.6526 | 1,606 | 2.3102 |
-| Yambda | SSD4Rec | 6,508 | 9.1329 | 1,606 | 2.1172 |
+| Yambda | SSD4Rec | 6,508 | 9.3452 | 1,606 | 2.2025 |
 
-These are observed user-group means; the analysis does not estimate a causal effect of metadata availability or test the between-group difference. The original aggregate report has SHA-256 `df23bd53c4932324c5e2b9b2d607a284d401358baf8461ca77d8e442f51f047a`. Its 24 source prediction hashes match the Table 1 full-system/backbone inputs.
+These are observed user-group means; the analysis does not estimate a causal effect of metadata availability or test the between-group difference. The SSD4Rec rows use the shared Table 1/Table 2 frozen models and matched backbone predictions; the SASRec rows are unchanged.

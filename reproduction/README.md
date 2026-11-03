@@ -329,10 +329,11 @@ baseline. The second removes only the first-song transition source, refills to
 200 and keeps backbone Top-10 protection. Source coverage is not Top-10 ranking.
 Run fixed-pool matching controls for both SASRec and SSD4Rec. Within each
 backbone's A/B/C comparison, retain the same candidate pools, fitting requests,
-other 27 inputs and Train-internal selection rule. The SSD4Rec Table 2 follow-up
-uses separate backbone checkpoints and refitted rankers from Table 1; its ARRIVE
-arm must not be replaced with Table 1's outputs. Run Table 3 source-coverage
-replay for SASRec.
+other 27 inputs and Train-internal selection rule. For both backbones, Tables 1
+and 2 use the same frozen backbone checkpoints and full ARRIVE models within
+each seed. Reuse that seed's Table 1 ARRIVE predictions as Table 2 arm A and
+pair all controls within the same seed. Run Table 3 source-coverage replay for
+SASRec.
 
 Prepare an analysis JSON with `rankings` entries containing `dataset`,
 `backbone`, `method`, `seed` and `path` to each saved prediction NPZ. Methods are

@@ -169,8 +169,9 @@ membership, exact RRF200 and zero removed fields (base columns
 Train and Validation source policies, and evaluation rejects a different
 policy from the saved model. Identity and wrong-song matching cannot add an
 explicit cue channel to a joint-removal model. The paper's I/J results use the
-Table 2 SSD4Rec lineage; they must not be mixed with Table 1's independent SSD
-checkpoints. Original SASRec I/J assets were unavailable in the reported run.
+shared Table 1/Table 2 SSD4Rec checkpoint lineage; pair each control with the
+full ARRIVE arm from the same seed. Original SASRec I/J assets were unavailable
+in the reported run.
 
 ## Wrong-song matching
 
